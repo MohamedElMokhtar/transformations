@@ -8,11 +8,11 @@ models:
   - name: add_src_db_ahs
     description: "Data from source AHS"
     config:
-      schema: public
+      schema: consolidated_schema
       alias: fact_factures
 
   - name: add_src_db_csm
     description: "Data from source CSM"
     config:
-      schema: public
+      schema: consolidated_schema
       alias: fact_factures
