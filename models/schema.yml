@@ -7,14 +7,9 @@ sources:
       - name: csm_factures
 
 models:
-  - name: add_src_db_ahs
+  - name: merge_tables
     description: "Data from source AHS"
     config:
       schema: consolidated_schema
       alias: fact_factures
 
-  - name: add_src_db_csm
-    description: "Data from source CSM"
-    config:
-      schema: consolidated_schema
-      alias: fact_factures
