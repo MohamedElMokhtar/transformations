@@ -1,0 +1,18 @@
+sources:
+  - name: public
+    tables:
+      - name: ahs_factures
+      - name: csm_factures
+
+models:
+  - name: add_src_db_ahs
+    description: "Data from source AHS"
+    config:
+      schema: public
+      alias: fact_factures
+
+  - name: add_src_db_csm
+    description: "Data from source CSM"
+    config:
+      schema: public
+      alias: fact_factures
