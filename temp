@@ -1,0 +1,75 @@
+{{
+    config(
+        materialized = 'incremental',
+        unique_key   = 'src_id'
+    )
+}}
+
+-- 1. Combine both sources
+with all_factures as (
+
+    select 
+        numero_facture          as num_facture,
+        id                      as facture_id,
+        exercice_id,
+        p_eau_id,
+        unite_id                as usagers_id,
+        date_facture as date_fact,
+        montant_sold            as montant_anterieur,
+        montant_net             as montant_paye,
+        montant_brute           as montant_total,
+        volume,
+        ancien_index,
+        nouveau_index,
+        'AHS'                   as src
+    from {{ source('public', 'ahs_factures') }}
+
+    union all
+
+    select 
+        numero_facture          as num_facture,
+        id                      as facture_id,
+        exercice_id,
+        p_eau_id,
+        unite_id                as usagers_id,
+        date_facture as date_fact,
+        montant_sold            as montant_anterieur,
+        montant_net             as montant_paye,
+        montant_brute           as montant_total,
+        volume,
+        ancien_index,
+        nouveau_index,
+        'CSM'                   as src
+    from {{ source('public', 'csm_factures') }}
+),
+
+date_dim as (
+    select
+        date_id,
+        date
+    from {{ ref('dim_date') }}
+)
+
+-- 3. Final output
+select
+    num_facture,
+    facture_id,
+    exercice_id,
+    p_eau_id,
+    usagers_id,
+    date_facture,
+    montant_anterieur,
+    montant_paye,
+    montant_total,
+    volume,
+    ancien_index,
+    nouveau_index,
+    src,
+    src || '_' || facture_id as src_id
+from dim_date
+{% if is_incremental() %}
+  -- If no timestamp exists, use primary key to avoid reloading duplicates
+  where (src || '_' || facture_id) not in (
+      select src_id from {{ this }}
+  )
+{% endif %}

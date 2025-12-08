@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: public
+    tables:
+      - name: ahs_factures
+      - name: csm_factures
+
+models:
+  - name: fact_factures
+    description: "factures consolidées"
+    config:
+      schema: test_dwh
+      alias: fact_factures
+    
+  - name: dim_date
+    description: "dates"
+    config:
+      schema: test_dwh
+      alias: dim_date
