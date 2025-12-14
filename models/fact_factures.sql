@@ -67,6 +67,66 @@ with all_factures as (
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('public', 'csm_factures') }}
+  
+  union all
+  
+  select
+    numero_facture,
+    id,
+    exercice_id,
+    p_eau_id,
+    unite_id,
+    date_facture,
+    montant_sold,
+    montant_net,
+    montant_brute,
+    volume,
+    ancien_index,
+    nouveau_index,
+    'OCC' as src,
+    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('public', 'occ_factures') }}
+  
+  union all
+  
+  select
+    numero_facture,
+    id,
+    exercice_id,
+    p_eau_id,
+    unite_id,
+    date_facture,
+    montant_sold,
+    montant_net,
+    montant_brute,
+    volume,
+    ancien_index,
+    nouveau_index,
+    'CZ' as src,
+    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('public', 'cz_factures') }}
+  
+  union all
+  
+  select
+    numero_facture,
+    id,
+    exercice_id,
+    p_eau_id,
+    unite_id,
+    date_facture,
+    montant_sold,
+    montant_net,
+    montant_brute,
+    volume,
+    ancien_index,
+    nouveau_index,
+    'SAHARA' as src,
+    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('public', 'sahara_factures') }}
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
