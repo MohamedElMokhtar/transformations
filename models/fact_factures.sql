@@ -264,7 +264,7 @@ source_data_deduped as (  -- NEW CTE
     nouveau_index,
     src,
     _ab_cdc_updated_at,
-    _ab_cdc_deleted_at,
+    _ab_cdc_deleted_at
     -- date_facture
   from changed_records
 )
