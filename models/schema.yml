@@ -8,6 +8,11 @@ sources:
       - name: occ_factures
       - name: cz_factures
       - name: sahara_factures
+      - name: ahs_communes
+      - name: csm_communes
+      - name: occ_communes
+      - name: cz_communes
+      - name: sahara_communes
 
 models:
 
