@@ -5,6 +5,9 @@ sources:
     tables:
       - name: ahs_factures
       - name: csm_factures
+      - name: occ_factures
+      - name: cz_factures
+      - name: sahara_factures
 
 models:
 
