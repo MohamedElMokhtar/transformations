@@ -272,7 +272,7 @@ source_data_deduped as (  -- NEW CTE
 -- Step 9: Add SCD2 metadata columns to records being inserted
 , final_inserts as (
   select
-    {{ dbt_utils.generate_surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key
+    {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
     num_facture,
     facture_id,
@@ -306,7 +306,7 @@ select * from final_inserts   -- New current versions
 
 -- Initial Load: All records are current with open-ended validity
 select
-  {{ dbt_utils.generate_surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
+  {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   num_facture,
   facture_id,
