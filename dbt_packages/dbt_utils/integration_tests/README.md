@@ -78,14 +78,16 @@ make test target=postgres
 
 or, to run tests for a single model:
 ```shell
-make test target=[postgres|redshift|...]
+make test target=[postgres|redshift|...] [models=...] [seeds=...]
 ```
 
 or more specific:
 
 ```shell
-make test target=postgres
+make test target=postgres models=sql.test_star seeds=sql.data_star
 ```
+
+Specying `models=` and `seeds=` is optional, however _if_ you specify `seeds`, you have to specify `models` too.
 
 Where possible, targets are being run in docker containers (this works for Postgres or in the future Spark for example). For managed services like Snowflake, BigQuery and Redshift this is not possible, hence your own configuration for these services has to be provided in the appropriate env files in `integration_tests/.env/[TARGET].env`
 
@@ -106,10 +108,10 @@ This directory contains an example dbt project which tests the macros in the `db
 
 For an example integration tests, check out the tests for the `get_url_parameter` macro:
 
-1. [Macro definition](https://github.com/dbt-labs/dbt-utils/blob/main/macros/web/get_url_parameter.sql)
-2. [Seed file with fake data](https://github.com/dbt-labs/dbt-utils/blob/main/integration_tests/data/web/data_urls.csv)
-3. [Model to test the macro](https://github.com/dbt-labs/dbt-utils/blob/main/integration_tests/models/web/test_urls.sql)
-4. [A generic test to assert the macro works as expected](https://github.com/dbt-labs/dbt-utils/blob/main/integration_tests/models/web/schema.yml)
+1. [Macro definition](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/web/get_url_parameter.sql)
+2. [Seed file with fake data](https://github.com/fishtown-analytics/dbt-utils/blob/master/integration_tests/data/web/data_urls.csv)
+3. [Model to test the macro](https://github.com/fishtown-analytics/dbt-utils/blob/master/integration_tests/models/web/test_urls.sql)
+4. [A generic test to assert the macro works as expected](https://github.com/fishtown-analytics/dbt-utils/blob/master/integration_tests/models/web/schema.yml#L2)
 
 Once you've added all of these files, you should be able to run:
 
