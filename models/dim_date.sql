@@ -17,6 +17,24 @@ with raw_dates as (
     select distinct date_facture
     from {{ source('public', 'csm_factures') }}
     where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('public', 'cz_factures') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('public', 'occ_factures') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('public', 'sahara_factures') }}
+    where _ab_cdc_deleted_at is null
 ),
 
 -- Step 2: keep only dates that are not already in dim_date (incremental logic)
