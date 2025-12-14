@@ -70,13 +70,13 @@ with all_factures as (
 ),
 
 -- Step 2: Attach each facture date to its date in dim_date
-all_factures_with_dates as (
-  select
-    a.*,
-    d.full_date as date_facture
-  from all_factures a
-  left join {{ ref('dim_date') }} d on a.date_fact = d.full_date
-),
+-- all_factures as (
+--   select
+--     a.*,
+--     d.full_date as date_facture
+--   from all_factures a
+--   left join {{ ref('dim_date') }} d on a.date_fact = d.full_date
+-- ),
 
 -- Step 3: Prepare source data with natural key (src_id) and apply incremental filter
 source_data as (
@@ -97,9 +97,9 @@ source_data as (
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    date_facture,
+    -- date_facture,
     row_number() over (partition by src || '_' || facture_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
-  from all_factures_with_dates
+  from all_factures
   {% if is_incremental() %}
   -- Only process records that have been updated since last run
   where _ab_cdc_updated_at > (select max(_ab_cdc_updated_at) from {{ this }})
@@ -123,8 +123,8 @@ source_data_deduped as (  -- NEW CTE
     nouveau_index,
     src,
     _ab_cdc_updated_at,
-    _ab_cdc_deleted_at,
-    date_facture
+    _ab_cdc_deleted_at
+    -- date_facture
   from source_data
   where rn = 1  -- Keep only the most recent version
 )
@@ -148,8 +148,8 @@ source_data_deduped as (  -- NEW CTE
     s.nouveau_index,
     s.src,
     s._ab_cdc_updated_at,
-    s._ab_cdc_deleted_at,
-    s.date_facture
+    s._ab_cdc_deleted_at
+    -- s.date_facture
   from source_data_deduped s
   inner join {{ this }} t
     on s.src_id = t.src_id
@@ -161,7 +161,7 @@ source_data_deduped as (  -- NEW CTE
     or (s.exercice_id is distinct from t.exercice_id)
     or (s.p_eau_id is distinct from t.p_eau_id)
     or (s.usagers_id is distinct from t.usagers_id)
-    or (s.date_facture is distinct from t.date_facture)
+    -- or (s.date_facture is distinct from t.date_facture)
     or (s.montant_anterieur is distinct from t.montant_anterieur)
     or (s.montant_paye is distinct from t.montant_paye)
     or (s.montant_total is distinct from t.montant_total)
@@ -189,7 +189,7 @@ source_data_deduped as (  -- NEW CTE
     t.nouveau_index,
     t.src,
     t._ab_cdc_updated_at,
-    t.date_facture,
+    -- t.date_facture,
     t.valid_from,                      -- Keep original start date
     c._ab_cdc_updated_at as valid_to,  -- End when the new version became valid
     false as is_current                -- Mark as historical
@@ -229,12 +229,12 @@ source_data_deduped as (  -- NEW CTE
     t.nouveau_index,
     t.src,
     t._ab_cdc_updated_at,
-    t.date_facture,
+    -- t.date_facture,
     t.valid_from,
     s._ab_cdc_deleted_at as valid_to,  -- Use actual deletion timestamp from CDC
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
-  inner join all_factures_with_dates s
+  inner join all_factures s
     on t.src_id = (s.src || '_' || s.facture_id)
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
@@ -265,7 +265,7 @@ source_data_deduped as (  -- NEW CTE
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    date_facture
+    -- date_facture
   from changed_records
 )
 
@@ -288,7 +288,7 @@ source_data_deduped as (  -- NEW CTE
     nouveau_index,
     src,
     _ab_cdc_updated_at,
-    date_facture,
+    -- date_facture,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
     null::timestamp as valid_to,      -- NULL = current record
     true as is_current                -- Mark as active version
@@ -322,7 +322,7 @@ select
   nouveau_index,
   src,
   _ab_cdc_updated_at,
-  date_facture,
+  -- date_facture,
   _ab_cdc_updated_at as valid_from, -- Set start date
   null::timestamp as valid_to,      -- No end date (current)
   true as is_current                -- All records are current on initial load
