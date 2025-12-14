@@ -96,12 +96,37 @@ source_data as (
     nouveau_index,
     src,
     _ab_cdc_updated_at,
-    date_facture
+    _ab_cdc_deleted_at,
+    date_facture,
+    row_number() over (partition by src || '_' || facture_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
   from all_factures_with_dates
   {% if is_incremental() %}
   -- Only process records that have been updated since last run
   where _ab_cdc_updated_at > (select max(_ab_cdc_updated_at) from {{ this }})
   {% endif %}
+),
+
+source_data_deduped as (  -- NEW CTE
+  select
+    src_id,
+    num_facture,
+    facture_id,
+    exercice_id,
+    p_eau_id,
+    usagers_id,
+    date_fact,
+    montant_anterieur,
+    montant_paye,
+    montant_total,
+    volume,
+    ancien_index,
+    nouveau_index,
+    src,
+    _ab_cdc_updated_at,
+    _ab_cdc_deleted_at,
+    date_facture
+  from source_data
+  where rn = 1  -- Keep only the most recent version
 )
 
 {% if is_incremental() %}
@@ -123,8 +148,9 @@ source_data as (
     s.nouveau_index,
     s.src,
     s._ab_cdc_updated_at,
+    s._ab_cdc_deleted_at,
     s.date_facture
-  from source_data s
+  from source_data_deduped s
   inner join {{ this }} t
     on s.src_id = t.src_id
     and t.is_current = true -- Only compare against current versions
@@ -177,10 +203,11 @@ source_data as (
 , new_records as (
   select
     s.*
-  from source_data s
+  from source_data_deduped s
   left join {{ this }} t
     on s.src_id = t.src_id
   where t.src_id is null -- Only records not found in target
+    and s._ab_cdc_deleted_at is null  -- Exclude records that are already deleted
 )
 
 -- Step 7: Detect deleted records (exist in target but not in source)
@@ -237,6 +264,7 @@ source_data as (
     nouveau_index,
     src,
     _ab_cdc_updated_at,
+    _ab_cdc_deleted_at,
     date_facture
   from changed_records
 )
@@ -298,6 +326,6 @@ select
   _ab_cdc_updated_at as valid_from, -- Set start date
   null::timestamp as valid_to,      -- No end date (current)
   true as is_current                -- All records are current on initial load
-from source_data
+from source_data_deduped
 
 {% endif %}
