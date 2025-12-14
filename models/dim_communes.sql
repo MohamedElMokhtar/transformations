@@ -7,14 +7,14 @@
 }}
 
 /*
-  SCD2 Implementation for Factures
+  SCD2 Implementation for communes
   
   This model tracks historical changes to facture records from multiple sources.
   It maintains a complete history by creating new rows for each change, with validity dates
   and is_current flag to identify active records.
   
   Key Features:
-  - Combines data from AHS,CSM,CZ,OCC,SAHARA factures sources
+  - Combines data from AHS,CSM,CZ,OCC,SAHARA communes sources
   - Tracks changes to all business attributes
   - Maintains validity periods (valid_from, valid_to)
   - Identifies current records with is_current flag
@@ -28,7 +28,7 @@
 */
 
 
--- Step 1: Collect all factures from all RAW source tables
+-- Step 1: Collect all communes from all RAW source tables
 with all_communes as (
   select
     id as commune_id,
@@ -39,7 +39,7 @@ with all_communes as (
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('public', 'ahs_factures') }}
+  from {{ source('public', 'ahs_communes') }}
   
   union all
   
@@ -52,7 +52,7 @@ with all_communes as (
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'csm_factures') }}
+  from {{ source('public', 'csm_communes') }}
   
   union all
   
@@ -65,7 +65,7 @@ with all_communes as (
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'occ_factures') }}
+  from {{ source('public', 'occ_communes') }}
   
   union all
   
@@ -78,7 +78,7 @@ with all_communes as (
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'cz_factures') }}
+  from {{ source('public', 'cz_communes') }}
   
   union all
   
@@ -91,7 +91,7 @@ with all_communes as (
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'sahara_factures') }}
+  from {{ source('public', 'sahara_communes') }}
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
