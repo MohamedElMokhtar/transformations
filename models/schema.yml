@@ -1,39 +1,200 @@
 version: 2
 
+# RAW Tables
+
 sources:
-  - name: public
+  - name: __raw_
     tables:
+    
+    # Factures
       - name: ahs_factures
       - name: csm_factures
       - name: occ_factures
       - name: cz_factures
       - name: sahara_factures
 
+    # Communes
+      - name: ahs_communes
+      - name: csm_communes
+      - name: occ_communes
+      - name: cz_communes
+      - name: sahara_communes
+
+    # Exercises
+      - name: ahs_exercices
+      - name: csm_exercices
+      - name: occ_exercices
+      - name: cz_exercices
+      - name: sahara_exercices
+
+    # Mise en demeure
+      - name: ahs_miseen_demeure
+      - name: csm_miseen_demeure
+      - name: occ_miseen_demeure
+      - name: cz_miseen_demeure
+      - name: sahara_miseen_demeure
+
+    # P eau
+      - name: ahs_p_eau
+      - name: csm_p_eau
+      - name: occ_p_eau
+      - name: cz_p_eau
+      - name: sahara_p_eau
+
+    # Payements
+      - name: ahs_payements
+      - name: csm_payements
+      - name: occ_payements
+      - name: cz_payements
+      - name: sahara_payements
+
+    # Prelevement volume
+      - name: ahs_prelevement_volume
+      - name: csm_prelevement_volume
+      - name: occ_prelevement_volume
+      - name: cz_prelevement_volume
+      - name: sahara_prelevement_volume
+
+    # Recours
+      - name: ahs_recours
+      - name: csm_recours
+      - name: occ_recours
+      - name: cz_recours
+      - name: sahara_recours
+
+    # Type Activité
+      - name: ahs_type_activite
+      - name: csm_type_activite
+      - name: occ_type_activite
+      - name: cz_type_activite
+      - name: sahara_type_activite
+
+    # Type Décision Recours
+      - name: ahs_type_decision_recour
+      - name: csm_type_decision_recour
+      - name: occ_type_decision_recour
+      - name: cz_type_decision_recour
+      - name: sahara_type_decision_recour
+
+    # Type Estimation
+      - name: ahs_type_estimation
+      - name: csm_type_estimation
+      - name: occ_type_estimation
+      - name: cz_type_estimation
+      - name: sahara_type_estimation
+
+    # Type État Compteur
+      - name: ahs_type_etat_compteur
+      - name: csm_type_etat_compteur
+      - name: occ_type_etat_compteur
+      - name: cz_type_etat_compteur
+      - name: sahara_type_etat_compteur
+
+    # Type Nature P Eau
+      - name: ahs_type_nature_p_eau
+      - name: csm_type_nature_p_eau
+      - name: occ_type_nature_p_eau
+      - name: cz_type_nature_p_eau
+      - name: sahara_type_nature_p_eau
+
+    # Type Paiement
+      - name: ahs_type_paiement
+      - name: csm_type_paiement
+      - name: occ_type_paiement
+      - name: cz_type_paiement
+      - name: sahara_type_paiement
+
+    # Type Statut
+      - name: ahs_type_statut
+      - name: csm_type_statut
+      - name: occ_type_statut
+      - name: cz_type_statut
+      - name: sahara_type_statut
+
+    # Type Unité
+      - name: ahs_type_unite
+      - name: csm_type_unite
+      - name: occ_type_unite
+      - name: cz_type_unite
+      - name: sahara_type_unite
+
+    # Wilaya
+      - name: ahs_wilaya
+      - name: csm_wilaya
+      - name: occ_wilaya
+      - name: cz_wilaya
+      - name: sahara_wilaya
+
+    # Unités
+      - name: ahs_unites
+      - name: csm_unites
+      - name: occ_unites
+      - name: cz_unites
+      - name: sahara_unites
+
+    # Type État Unité
+      - name: ahs_type_etat_unite
+      - name: csm_type_etat_unite
+      - name: occ_type_etat_unite
+      - name: cz_type_etat_unite
+      - name: sahara_type_etat_unite
+
+# Models for dwh tables defined with constraints
+
 models:
 
+  ############
+  # DIMENSIONS
+  ############
+
+  # date
   - name: dim_date
-    description: "Date dimension populated automatically from raw factures/...."
+    description: "Date dimension containing unique dates"
     columns:
+
       - name: full_date
         description: "Primary key"
         tests:
           - unique
-    config:
-      schema: transformed
 
+    config:
+      schema: dwh
+
+  # wilaya
+  - name: dim_wilaya
+    description: "wilaya dimension"
+    columns:
+
+      - name: wilaya_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh
+
+  ############
+  # FACTS
+  ############
+  
+  # 
   - name: fact_factures
     description: "Fact table for factures"
     columns:
+
       - name: src_id
         description: "Primary key of the fact table"
         tests:
           - not_null
+
       - name: date_facture
         description: "Foreign key to dim_date.full_date"
         tests:
           - relationships:
               to: ref('dim_date')
               field: full_date
+
     config:
-      schema: transformed
+      schema: dwh
           
