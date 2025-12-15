@@ -57,4 +57,14 @@ models:
           - not_null
     config:
       schema: transformed
+
+  - name: dim_type_etat_compteur
+    description: "dim ..."
+    columns:
+      - name: src_id
+        description: "Primary key of the fact table"
+        tests:
+          - not_null
+    config:
+      schema: transformed    
           
