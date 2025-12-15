@@ -13,6 +13,11 @@ sources:
       - name: occ_communes
       - name: cz_communes
       - name: sahara_communes
+      - name: ahs_type_etat_compteur
+      - name: csm_type_etat_compteur
+      - name: occ_type_etat_compteur
+      - name: cz_type_etat_compteur
+      - name: sahara_type_etat_compteur
 
 models:
 
