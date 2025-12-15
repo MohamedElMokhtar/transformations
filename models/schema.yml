@@ -41,4 +41,15 @@ models:
               field: full_date
     config:
       schema: transformed
+
+  
+  - name: dim_communes
+    description: "dim ..."
+    columns:
+      - name: src_id
+        description: "Primary key of the fact table"
+        tests:
+          - not_null
+    config:
+      schema: transformed
           

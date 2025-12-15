@@ -31,7 +31,7 @@
 -- Step 1: Collect all communes from all RAW source tables
 with all_communes as (
   select
-    Id as commune_id,
+    "Id" as commune_id,
     wilaya_id,
     designation_latin as commune,
     code_com as code_commune,
@@ -44,7 +44,7 @@ with all_communes as (
   union all
   
   select
-    Id,
+    "Id",
     wilaya_id,
     designation_latin,
     code_com,
@@ -57,7 +57,7 @@ with all_communes as (
   union all
   
   select
-    Id,
+    "Id",
     wilaya_id,
     designation_latin,
     code_com,
@@ -70,7 +70,7 @@ with all_communes as (
   union all
   
   select
-    Id,
+    "Id",
     wilaya_id,
     designation_latin,
     code_com,
@@ -83,7 +83,7 @@ with all_communes as (
   union all
   
   select
-    Id,
+    "Id",
     wilaya_id,
     designation_latin,
     code_com,
