@@ -5,17 +5,136 @@
     ) 
 }}
 
+/*
+  This model populates dim_date with all unique dates that are in factures,payments ....
+*/
+
 -- Step 1: extract all distinct dates from raw tables
 with raw_dates as (
 
+    -- FACTURES
     select distinct date_facture as full_date
-    from {{ source('public', 'ahs_factures') }}
+    from {{ source('__raw_', 'ahs_factures') }}
     where _ab_cdc_deleted_at is null
 
     union
 
     select distinct date_facture
-    from {{ source('public', 'csm_factures') }}
+    from {{ source('__raw_', 'csm_factures') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'cz_factures') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'occ_factures') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'sahara_factures') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    -- PAYEMENTS
+
+    select distinct date_paie as full_date
+    from {{ source('__raw_', 'ahs_payements') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_paie
+    from {{ source('__raw_', 'csm_payements') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_paie
+    from {{ source('__raw_', 'cz_payements') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_paie
+    from {{ source('__raw_', 'occ_payements') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_paie
+    from {{ source('__raw_', 'sahara_payements') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    -- MISE EN DEMEURE
+
+    select distinct date_facture as full_date
+    from {{ source('__raw_', 'ahs_miseen_demeure') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'csm_miseen_demeure') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'cz_miseen_demeure') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'occ_miseen_demeure') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_facture
+    from {{ source('__raw_', 'sahara_miseen_demeure') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    -- RECOURS
+
+    select distinct date_recour as full_date
+    from {{ source('__raw_', 'ahs_recours') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_recour
+    from {{ source('__raw_', 'csm_recours') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_recour
+    from {{ source('__raw_', 'cz_recours') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_recour
+    from {{ source('__raw_', 'occ_recours') }}
+    where _ab_cdc_deleted_at is null
+
+    union
+
+    select distinct date_recour
+    from {{ source('__raw_', 'sahara_recours') }}
     where _ab_cdc_deleted_at is null
 ),
 
