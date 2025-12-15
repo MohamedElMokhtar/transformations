@@ -7,149 +7,78 @@
 }}
 
 /*
-  SCD2 Implementation for Factures
-  
-  This model tracks historical changes to facture records from multiple sources.
-  It maintains a complete history by creating new rows for each change, with validity dates
-  and is_current flag to identify active records.
-  
-  Key Features:
-  - Combines data from AHS,CSM,CZ,OCC,SAHARA factures sources
-  - Tracks changes to all business attributes
-  - Maintains validity periods (valid_from, valid_to)
-  - Identifies current records with is_current flag
-  - Uses surrogate keys for unique version identification
-  
-  SCD2 Columns:
-  - surrogate_key: Unique identifier for each record version
-  - valid_from: Timestamp when this version became active
-  - valid_to: Timestamp when this version expired (NULL for current records)
-  - is_current: Boolean flag (TRUE for current, FALSE for historical)
+  SCD2 Implementation for wilaya
 */
 
 
--- Step 1: Collect all factures from all RAW source tables
-with all_factures as (
+-- Step 1: Collect all wilaya from all RAW source tables
+with all_wilaya as (
   select
-    numero_facture as num_facture,
-    id as facture_id,
-    exercice_id,
-    p_eau_id,
-    unite_id as usagers_id,
-    date_facture as date_fact,
-    montant_sold as montant_anterieur,
-    montant_net as montant_paye,
-    montant_brute as montant_total,
-    volume,
-    ancien_index,
-    nouveau_index,
+    "ID" as wilaya_id,
+    designation_latin as wilaya,
+    code_wilaya,
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('__raw_', 'ahs_factures') }}
+  from {{ source('__raw_', 'ahs_wilaya') }}
   
   union all
   
   select
-    numero_facture,
-    id,
-    exercice_id,
-    p_eau_id,
-    unite_id,
-    date_facture,
-    montant_sold,
-    montant_net,
-    montant_brute,
-    volume,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'csm_factures') }}
+  from {{ source('__raw_', 'csm_wilaya') }}
   
   union all
   
   select
-    numero_facture,
-    id,
-    exercice_id,
-    p_eau_id,
-    unite_id,
-    date_facture,
-    montant_sold,
-    montant_net,
-    montant_brute,
-    volume,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'occ_factures') }}
+  from {{ source('__raw_', 'occ_wilaya') }}
   
   union all
   
   select
-    numero_facture,
-    id,
-    exercice_id,
-    p_eau_id,
-    unite_id,
-    date_facture,
-    montant_sold,
-    montant_net,
-    montant_brute,
-    volume,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'cz_factures') }}
+  from {{ source('__raw_', 'cz_wilaya') }}
   
   union all
   
   select
-    numero_facture,
-    id,
-    exercice_id,
-    p_eau_id,
-    unite_id,
-    date_facture,
-    montant_sold,
-    montant_net,
-    montant_brute,
-    volume,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'sahara_factures') }}
+  from {{ source('__raw_', 'sahara_wilaya') }}
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
 source_data as (
   select
-    src || '_' || facture_id as src_id,
-    num_facture,
-    facture_id,
-    exercice_id,
-    p_eau_id,
-    usagers_id,
-    date_fact,
-    montant_anterieur,
-    montant_paye,
-    montant_total,
-    volume,
-    ancien_index,
-    nouveau_index,
+    src || '_' || wilaya_id as src_id,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    row_number() over (partition by src || '_' || facture_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
-  from all_factures
+    row_number() over (partition by src || '_' || wilaya_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
+  from all_wilaya
   {% if is_incremental() %}
   -- Only process records that have been updated since last run
   where _ab_cdc_updated_at > (select max(_ab_cdc_updated_at) from {{ this }})
@@ -160,18 +89,9 @@ source_data as (
 source_data_deduped as (  -- NEW CTE
   select
     src_id,
-    num_facture,
-    facture_id,
-    exercice_id,
-    p_eau_id,
-    usagers_id,
-    date_fact,
-    montant_anterieur,
-    montant_paye,
-    montant_total,
-    volume,
-    ancien_index,
-    nouveau_index,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -184,18 +104,9 @@ source_data_deduped as (  -- NEW CTE
 , changed_records as (
   select
     s.src_id,
-    s.num_facture,
-    s.facture_id,
-    s.exercice_id,
-    s.p_eau_id,
-    s.usagers_id,
-    s.date_fact,
-    s.montant_anterieur,
-    s.montant_paye,
-    s.montant_total,
-    s.volume,
-    s.ancien_index,
-    s.nouveau_index,
+    s.wilaya_id,
+    s.wilaya,
+    s.code_wilaya,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -206,16 +117,8 @@ source_data_deduped as (  -- NEW CTE
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.num_facture is distinct from t.num_facture)
-    or (s.exercice_id is distinct from t.exercice_id)
-    or (s.p_eau_id is distinct from t.p_eau_id)
-    or (s.usagers_id is distinct from t.usagers_id)
-    or (s.montant_anterieur is distinct from t.montant_anterieur)
-    or (s.montant_paye is distinct from t.montant_paye)
-    or (s.montant_total is distinct from t.montant_total)
-    or (s.volume is distinct from t.volume)
-    or (s.ancien_index is distinct from t.ancien_index)
-    or (s.nouveau_index is distinct from t.nouveau_index)
+    (s.wilaya is distinct from t.wilaya)
+    or (s.code_wilaya is distinct from t.code_wilaya)
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -223,18 +126,9 @@ source_data_deduped as (  -- NEW CTE
   select
     t.surrogate_key,
     t.src_id,
-    t.num_facture,
-    t.facture_id,
-    t.exercice_id,
-    t.p_eau_id,
-    t.usagers_id,
-    t.date_fact,
-    t.montant_anterieur,
-    t.montant_paye,
-    t.montant_total,
-    t.volume,
-    t.ancien_index,
-    t.nouveau_index,
+    t.wilaya_id,
+    t.wilaya,
+    t.code_wilaya,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -262,26 +156,17 @@ source_data_deduped as (  -- NEW CTE
   select
     t.surrogate_key,
     t.src_id,
-    t.num_facture,
-    t.facture_id,
-    t.exercice_id,
-    t.p_eau_id,
-    t.usagers_id,
-    t.date_fact,
-    t.montant_anterieur,
-    t.montant_paye,
-    t.montant_total,
-    t.volume,
-    t.ancien_index,
-    t.nouveau_index,
+    t.wilaya_id,
+    t.wilaya,
+    t.code_wilaya,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
     s._ab_cdc_deleted_at as valid_to,  -- Use actual deletion timestamp from CDC
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
-  inner join all_factures s
-    on t.src_id = (s.src || '_' || s.facture_id)
+  inner join all_wilaya s
+    on t.src_id = (s.src || '_' || s.wilaya_id)
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
 )
@@ -296,18 +181,9 @@ source_data_deduped as (  -- NEW CTE
   -- New versions of existing records that changed
   select 
     src_id,
-    num_facture,
-    facture_id,
-    exercice_id,
-    p_eau_id,
-    usagers_id,
-    date_fact,
-    montant_anterieur,
-    montant_paye,
-    montant_total,
-    volume,
-    ancien_index,
-    nouveau_index,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -319,18 +195,9 @@ source_data_deduped as (  -- NEW CTE
   select
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
-    num_facture,
-    facture_id,
-    exercice_id,
-    p_eau_id,
-    usagers_id,
-    date_fact,
-    montant_anterieur,
-    montant_paye,
-    montant_total,
-    volume,
-    ancien_index,
-    nouveau_index,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -352,18 +219,9 @@ select * from final_inserts   -- New current versions
 select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
-  num_facture,
-  facture_id,
-  exercice_id,
-  p_eau_id,
-  usagers_id,
-  date_fact,
-  montant_anterieur,
-  montant_paye,
-  montant_total,
-  volume,
-  ancien_index,
-  nouveau_index,
+  wilaya_id,
+  wilaya,
+  code_wilaya,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date
