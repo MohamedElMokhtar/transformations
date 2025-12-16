@@ -270,3 +270,16 @@ models:
     config:
       schema: dwh
           
+  - name: fact_encaissement
+    description: "Fact table for encaissement"
+    columns:
+
+      - name: date_encaissement
+        description: "Foreign key to dim_date.full_date"
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: full_date
+
+    config:
+      schema: dwh
