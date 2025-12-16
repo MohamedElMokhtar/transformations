@@ -188,6 +188,49 @@ models:
     config:
       schema: dwh
 
+  # type activite
+  - name: dim_type_activite
+    description: "type activite dimension"
+    columns:
+
+      - name: type_activite_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh
+
+  # etat usagers
+  - name: dim_etat_usagers
+    description: "etat usagers dimension"
+    columns:
+
+      - name: etat_usagers_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh
+
+  # # TABLE
+  # - name: dim_...
+  #   description: "... dimension"
+  #   columns:
+
+  #     - name: ..._id
+  #       description: "Primary key"
+  #       tests:
+  #         - unique
+  #         - not_null
+
+  #   config:
+  #     schema: dwh
+
+
   ############
   # FACTS
   ############
