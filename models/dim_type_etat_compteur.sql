@@ -26,7 +26,7 @@ with all_etat_compteur as (
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('__raw_', 'ahs_Type_Etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('__raw_', 'ahs_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -36,7 +36,7 @@ with all_etat_compteur as (
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'csm_Type_Etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('__raw_', 'csm_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -46,7 +46,7 @@ with all_etat_compteur as (
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'occ_Type_Etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('__raw_', 'occ_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -56,7 +56,7 @@ with all_etat_compteur as (
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'cz_Type_Etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('__raw_', 'cz_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -66,7 +66,7 @@ with all_etat_compteur as (
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'sahara_Type_Etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('__raw_', 'sahara_type_etat_compteur') }}                                       -- ######################## To be changed
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
