@@ -26,7 +26,7 @@ with all_etat_compteur as (
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('__raw_', 'ahs_type_etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('public', 'ahs_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -36,7 +36,7 @@ with all_etat_compteur as (
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'csm_type_etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('public', 'csm_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -46,7 +46,7 @@ with all_etat_compteur as (
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'occ_type_etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('public', 'occ_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -56,7 +56,7 @@ with all_etat_compteur as (
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'cz_type_etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('public', 'cz_type_etat_compteur') }}                                       -- ######################## To be changed
   
   union all
   
@@ -66,7 +66,7 @@ with all_etat_compteur as (
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'sahara_type_etat_compteur') }}                                       -- ######################## To be changed
+  from {{ source('public', 'sahara_type_etat_compteur') }}                                       -- ######################## To be changed
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
@@ -116,8 +116,7 @@ source_data_deduped as (  -- NEW CTE
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.etat_compteur_id is distinct from t.etat_compteur_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
-    or (s.etat_compteur is distinct from t.etat_compteur)         -- ######################## To be changed
+    (s.etat_compteur is distinct from t.etat_compteur)         -- ######################## To be changed
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
