@@ -216,6 +216,21 @@ models:
     config:
       schema: dwh
 
+  # statuts usagers
+  - name: dim_statuts_usagers
+    description: "statuts usagers dimension"
+    columns:
+
+      - name: statut_usager_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh
+
+
   # # TABLE
   # - name: dim_...
   #   description: "... dimension"
