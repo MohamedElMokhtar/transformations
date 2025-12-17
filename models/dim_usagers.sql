@@ -193,10 +193,10 @@ s.adresse,
     or (s.status_usagers_id is distinct from t.status_usagers_id)
     or (s.type_activite_id is distinct from t.type_activite_id)
     or (s.reference is distinct from t.reference)
-    or (s.nom_latin is distinct from t.nom_latin)
+    or (s.nom is distinct from t.nom)
     or (s.date_activité is distinct from t.date_activité)  
     or (s.date_arret is distinct from t.date_arret) 
-    or (s.adresse_latin is distinct from t.adresse_latin)        -- ######################## To be changed
+    or (s.adresse is distinct from t.adresse)        -- ######################## To be changed
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
