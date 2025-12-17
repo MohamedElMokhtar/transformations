@@ -117,7 +117,7 @@ with all_unites as (
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
 source_data as (
   select
-    src || '_' || "Id" as src_id,
+    src || '_' || usagers_id as src_id,
    usagers_id,
 commune_id,
 type_usagers_id,
@@ -132,7 +132,7 @@ adresse,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    row_number() over (partition by src || '_' || "Id" order by _ab_cdc_updated_at desc) as rn  -- ADDED
+    row_number() over (partition by src || '_' || usagers_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
   from all_unites
   {% if is_incremental() %}
   -- Only process records that have been updated since last run
@@ -260,7 +260,7 @@ t.adresse,
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
   inner join all_unites s
-    on t.src_id = (s.src || '_' || s."Id")
+    on t.src_id = (s.src || '_' || s.usagers_id)
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
 )
