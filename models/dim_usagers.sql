@@ -18,114 +18,122 @@
 -- ################################################
 -- ################################################
 
--- Step 1: Collect all payements from all RAW source tables
-with all_payements as (
+-- Step 1: Collect all unites from all RAW source tables
+with all_unites as (
   select
- id as encaissement_id,
- facture_id,
- exercice_id,
- mode_paie_id as type_paie_id,
- unite_id as usagers_id,
- date_paie as date_encaissement,
- montant_old as montant_total,
- montant_ttl as montant_payé,
- reste as montant_anterieur,
+      "Id" as usagers_id,
+  commune_id,
+  type_unite_id as type_usagers_id,
+  statut_unite_id as status_usagers_id,
+  etat_unite_id as etat_usagers_id,
+  type_activite_id,
+  reference,
+  nom_latin as nom,
+  dateactive as date_activité,
+  datearret as date_arret,
+  adresse_latin as adresse,
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('public', 'ahs_payements') }}                                       -- ######################## To be changed
+  from {{ source('public', 'ahs_unites') }}                                       -- ######################## To be changed
   
   union all
   
   select
-     id as encaissement_id,
- facture_id,
- exercice_id,
- mode_paie_id as type_paie_id,
- unite_id as usagers_id,
- date_paie as date_encaissement,
- montant_old as montant_total,
- montant_ttl as montant_payé,
- reste as montant_anterieur,
-
+      "Id" as usagers_id,
+  commune_id,
+  type_unite_id as type_usagers_id,
+  statut_unite_id as status_usagers_id,
+  etat_unite_id as etat_usagers_id,
+  type_activite_id,
+  reference,
+  nom_latin as nom,
+  dateactive as date_activité,
+  datearret as date_arret,
+  adresse_latin as adresse,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'csm_payements') }}                                       -- ######################## To be changed
+  from {{ source('public', 'csm_unites') }}                                       -- ######################## To be changed
   
   union all
   
   select
-     id as encaissement_id,
-     facture_id,
-     exercice_id,
-     mode_paie_id as type_paie_id,
-     unite_id as usagers_id,
-     date_paie as date_encaissement,
-     montant_old as montant_total,
-     montant_ttl as montant_payé,
-     reste as montant_anterieur,
-     'OCC' as src,
-      _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+     "Id" as usagers_id,
+  commune_id,
+  type_unite_id as type_usagers_id,
+  statut_unite_id as status_usagers_id,
+  etat_unite_id as etat_usagers_id,
+  type_activite_id,
+  reference,
+  nom_latin as nom,
+  dateactive as date_activité,
+  datearret as date_arret,
+  adresse_latin as adresse,
+    'OCC' as src,
+    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'occ_payements') }}                                       -- ######################## To be changed
+  from {{ source('public', 'occ_unites') }}                                       -- ######################## To be changed
   
   union all
   
   select
-    id as encaissement_id,
- facture_id,
- exercice_id,
- mode_paie_id as type_paie_id,
- unite_id as usagers_id,
- date_paie as date_encaissement,
- montant_old as montant_total,
- montant_ttl as montant_payé,
- reste as montant_anterieur,
-
+     "Id" as usagers_id,
+  commune_id,
+  type_unite_id as type_usagers_id,
+  statut_unite_id as status_usagers_id,
+  etat_unite_id as etat_usagers_id,
+  type_activite_id,
+  reference,
+  nom_latin as nom,
+  dateactive as date_activité,
+  datearret as date_arret,
+  adresse_latin as adresse,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'cz_payements') }}                                       -- ######################## To be changed
+  from {{ source('public', 'cz_unites') }}                                       -- ######################## To be changed
   
   union all
   
   select
-     id as encaissement_id,
- facture_id,
- exercice_id,
- mode_paie_id as type_paie_id,
- unite_id as usagers_id,
- date_paie as date_encaissement,
- montant_old as montant_total,
- montant_ttl as montant_payé,
- reste as montant_anterieur,
-
+     "Id" as usagers_id,
+  commune_id,
+  type_unite_id as type_usagers_id,
+  statut_unite_id as status_usagers_id,
+  etat_unite_id as etat_usagers_id,
+  type_activite_id,
+  reference,
+  nom_latin as nom,
+  dateactive as date_activité,
+  datearret as date_arret,
+  adresse_latin as adresse,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'sahara_payements') }}                                       -- ######################## To be changed
+  from {{ source('public', 'sahara_unites') }}                                       -- ######################## To be changed
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
 source_data as (
   select
-    src || '_' || encaissement_id as src_id,
-    encaissement_id,
-facture_id,
-exercice_id,
-type_paie_id,
-usagers_id,
-date_encaissement,
-montant_total,
-montant_payé,
-montant_anterieur,
-
+    src || '_' || "Id" as src_id,
+   usagers_id,
+commune_id,
+type_usagers_id,
+status_usagers_id,
+etat_usagers_id,
+type_activite_id,
+reference,
+nom,
+date_activité,
+date_arret,
+adresse,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    row_number() over (partition by src || '_' || encaissement_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
-  from all_payements
+    row_number() over (partition by src || '_' || "Id" order by _ab_cdc_updated_at desc) as rn  -- ADDED
+  from all_unites
   {% if is_incremental() %}
   -- Only process records that have been updated since last run
   where _ab_cdc_updated_at > (select max(_ab_cdc_updated_at) from {{ this }})
@@ -136,16 +144,17 @@ montant_anterieur,
 source_data_deduped as (  -- NEW CTE
   select
     src_id,
-    encaissement_id,
-facture_id,
-exercice_id,
-type_paie_id,
-usagers_id,
-date_encaissement,
-montant_total,
-montant_payé,
-montant_anterieur,
-
+    usagers_id,
+commune_id,
+type_usagers_id,
+status_usagers_id,
+etat_usagers_id,
+type_activite_id,
+reference,
+nom,
+date_activité,
+date_arret,
+adresse,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -157,16 +166,18 @@ montant_anterieur,
 -- Step 4: Identify records that have changed by comparing source to current target records
 , changed_records as (
   select
-s.src_id,
-s.encaissement_id,
-s.facture_id,
-s.exercice_id,
-s.type_paie_id,
-s.usagers_id,
-s.date_encaissement,
-s.montant_total,
-s.montant_payé,
-s.montant_anterieur,
+    s.src_id,
+    s.usagers_id,
+s.commune_id,
+s.type_usagers_id,
+s.status_usagers_id,
+s.etat_usagers_id,
+s.type_activite_id,
+s.reference,
+s.nom,
+s.date_activité,
+s.date_arret,
+s.adresse,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -177,13 +188,15 @@ s.montant_anterieur,
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.facture_id is distinct from t.facture_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
-    or (s.exercice_id is distinct from t.exercice_id) 
-    or (s.exercice_id is distinct from t.exercice_id) 
-    or (s.date_encaissement is distinct from t.date_encaissement) 
-    or (s.montant_total is distinct from t.montant_total) 
-    or (s.montant_payé is distinct from t.montant_payé) 
-    or (s.montant_anterieur is distinct from t.montant_anterieur)         -- ######################## To be changed
+    (s.etat_usagers_id is distinct from t.etat_usagers_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
+    or (s.commune_id is distinct from t.commune_id)
+    or (s.status_usagers_id is distinct from t.status_usagers_id)
+    or (s.type_activite_id is distinct from t.type_activite_id)
+    or (s.reference is distinct from t.reference)
+    or (s.nom_latin is distinct from t.nom_latin)
+    or (s.date_activité is distinct from t.date_activité)  
+    or (s.date_arret is distinct from t.date_arret) 
+    or (s.adresse_latin is distinct from t.adresse_latin)        -- ######################## To be changed
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -191,16 +204,17 @@ s.montant_anterieur,
   select
     t.surrogate_key,
     t.src_id,
-t.encaissement_id,
-t.facture_id,
-t.exercice_id,
-t.type_paie_id,
-t.usagers_id,
-t.date_encaissement,
-t.montant_total,
-t.montant_payé,
-t.montant_anterieur,
-
+    t.usagers_id,
+t.commune_id,
+t.type_usagers_id,
+t.status_usagers_id,
+t.etat_usagers_id,
+t.type_activite_id,
+t.reference,
+t.nom,
+t.date_activité,
+t.date_arret,
+t.adresse,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -228,24 +242,25 @@ t.montant_anterieur,
   select
     t.surrogate_key,
     t.src_id,
-t.encaissement_id,
-t.facture_id,
-t.exercice_id,
-t.type_paie_id,
-t.usagers_id,
-t.date_encaissement,
-t.montant_total,
-t.montant_payé,
-t.montant_anterieur,
-
+    t.usagers_id,
+t.commune_id,
+t.type_usagers_id,
+t.status_usagers_id,
+t.etat_usagers_id,
+t.type_activite_id,
+t.reference,
+t.nom,
+t.date_activité,
+t.date_arret,
+t.adresse,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
     s._ab_cdc_deleted_at as valid_to,  -- Use actual deletion timestamp from CDC
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
-  inner join all_payements s
-    on t.src_id = (s.src || '_' || s.encaissement_id)
+  inner join all_unites s
+    on t.src_id = (s.src || '_' || s."Id")
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
 )
@@ -260,16 +275,17 @@ t.montant_anterieur,
   -- New versions of existing records that changed
   select 
     src_id,
-    encaissement_id,
-facture_id,
-exercice_id,
-type_paie_id,
-usagers_id,
-date_encaissement,
-montant_total,
-montant_payé,
-montant_anterieur,
-
+   usagers_id,
+commune_id,
+type_usagers_id,
+status_usagers_id,
+etat_usagers_id,
+type_activite_id,
+reference,
+nom,
+date_activité,
+date_arret,
+adresse,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -281,16 +297,17 @@ montant_anterieur,
   select
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
-    encaissement_id,
-facture_id,
-exercice_id,
-type_paie_id,
-usagers_id,
-date_encaissement,
-montant_total,
-montant_payé,
-montant_anterieur,
-
+    usagers_id,
+commune_id,
+type_usagers_id,
+status_usagers_id,
+etat_usagers_id,
+type_activite_id,
+reference,
+nom,
+date_activité,
+date_arret,
+adresse,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -312,16 +329,17 @@ select * from final_inserts   -- New current versions
 select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
-  encaissement_id,
-facture_id,
-exercice_id,
-type_paie_id,
-usagers_id,
-date_encaissement,
-montant_total,
-montant_payé,
-montant_anterieur,
-
+  usagers_id,
+commune_id,
+type_usagers_id,
+status_usagers_id,
+etat_usagers_id,
+type_activite_id,
+reference,
+nom,
+date_activité,
+date_arret,
+adresse,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date
