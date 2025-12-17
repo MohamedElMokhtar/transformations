@@ -139,6 +139,7 @@ sources:
 
 models:
 
+# TABLE date
   - name: dim_date
     description: "Date dimension populated automatically from raw factures/...."
     columns:
@@ -149,6 +150,7 @@ models:
     config:
       schema: transformed
 
+# TABLE factures
   - name: fact_factures
     description: "Fact table for factures"
     columns:
@@ -165,7 +167,7 @@ models:
     config:
       schema: transformed
 
-  
+  # TABLE communes
   - name: dim_communes
     description: "dim ..."
     columns:
@@ -177,7 +179,7 @@ models:
       schema: transformed
  
 
-  # TABLE
+  # TABLE type_etat_compteur
   - name: dim_type_etat_compteur
     description: "... dimension"
     columns:
@@ -190,6 +192,34 @@ models:
 
     config:
       schema: transformed     
+
+    # TABLE encaissement
+  - name: fact_encaissement
+    description: "... dimension"
+    columns:
+
+      - name: encaissement_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed  
+
+      # TABLE prelevement
+  - name: fact_prelevement
+    description: "... dimension"
+    columns:
+
+      - name: prelevement_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed  
           
   # # TABLE
   # - name: dim_...

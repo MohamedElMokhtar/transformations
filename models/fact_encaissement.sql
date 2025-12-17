@@ -157,7 +157,8 @@ montant_anterieur,
 -- Step 4: Identify records that have changed by comparing source to current target records
 , changed_records as (
   select
-    encaissement_id,
+s.src_id,
+s.encaissement_id,
 s.facture_id,
 s.exercice_id,
 s.type_paie_id,
@@ -190,7 +191,7 @@ s.montant_anterieur,
   select
     t.surrogate_key,
     t.src_id,
-    encaissement_id,
+t.encaissement_id,
 t.facture_id,
 t.exercice_id,
 t.type_paie_id,
@@ -227,7 +228,7 @@ t.montant_anterieur,
   select
     t.surrogate_key,
     t.src_id,
-    encaissement_id,
+t.encaissement_id,
 t.facture_id,
 t.exercice_id,
 t.type_paie_id,
