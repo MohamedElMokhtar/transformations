@@ -222,7 +222,7 @@ models:
       schema: transformed  
           
 
-                # TABLE prelevement
+                # TABLE usagers
   - name: dim_usagers
     description: "... dimension"
     columns:
@@ -235,6 +235,23 @@ models:
 
     config:
       schema: transformed 
+
+
+                  # TABLE exercice
+  - name: dim_exercices
+    description: "... dimension"
+    columns:
+
+      - name: exercice_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed 
+
+
   # # TABLE
   # - name: dim_...
   #   description: "... dimension"
