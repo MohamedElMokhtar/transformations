@@ -205,7 +205,7 @@ source_data_deduped as (  -- NEW CTE
     s._ab_cdc_deleted_at as valid_to,  -- Use actual deletion timestamp from CDC
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
-  inner join all_activite s
+  inner join all_exercices s
     on t.src_id = (s.src || '_' || s.exercices_id)
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
