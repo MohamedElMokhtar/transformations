@@ -144,7 +144,7 @@ date_arret,
 , changed_records as (
   select
     s.src_id,
-   p_eau_id,
+   s.p_eau_id,
 s.nature__p_eau_id,
 s.etat_compteur_id,
 s.mode_estimation_id,
