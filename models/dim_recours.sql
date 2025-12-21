@@ -140,8 +140,10 @@ s.date_recour,
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.code is distinct from t.code)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
-    or (s.type_activite is distinct from t.type_activite)         -- ######################## To be changed
+    (s.decision_id is distinct from t.decision_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
+    or (s.usagers_id is distinct from t.usagers_id)  
+    or (s.facture_id is distinct from t.facture_id)
+    or (s.date_recour is distinct from t.date_recour)       -- ######################## To be changed
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
