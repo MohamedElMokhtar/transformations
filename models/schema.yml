@@ -252,6 +252,21 @@ models:
       schema: transformed 
 
 
+                      # TABLE recours
+  - name: dim_recours
+    description: "... dimension"
+    columns:
+
+      - name: recours_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed 
+
+
   # # TABLE
   # - name: dim_...
   #   description: "... dimension"
