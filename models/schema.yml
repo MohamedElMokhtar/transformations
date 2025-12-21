@@ -266,6 +266,19 @@ models:
     config:
       schema: transformed 
 
+                  # TABLE p_eau
+  - name: dim_p_eau
+    description: "... dimension"
+    columns:
+
+      - name: p_eau_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed 
 
   # # TABLE
   # - name: dim_...
