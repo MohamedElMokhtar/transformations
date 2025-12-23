@@ -157,7 +157,7 @@ source_data_deduped as (  -- NEW CTE
   select
     t.surrogate_key,
     t.src_id,
-    t.nature_peau_id,
+    t.nature_p_eau_id,
    t.nature_p_eau,
     t.src,
     t._ab_cdc_updated_at,
