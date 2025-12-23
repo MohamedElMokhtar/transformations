@@ -166,7 +166,7 @@ source_data_deduped as (  -- NEW CTE
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
   inner join all_type_nature_p_eau s
-    on t.src_id = (s.src || '_' || s.nature__p_eau_id)
+    on t.src_id = (s.src || '_' || s.nature_p_eau_id)
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
 )
