@@ -294,6 +294,19 @@ models:
 
     config:
       schema: transformed 
+                  # TABLE type_nature_p_eau
+  - name: dim_type_nature_p_eau
+    description: "... dimension"
+    columns:
+
+      - name: nature_p_eau_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed 
 
   # # TABLE
   # - name: dim_...
