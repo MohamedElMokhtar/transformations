@@ -80,7 +80,6 @@ source_data as (
     src || '_' || mode_estimation_id as src_id,
     mode_estimation_id,
 mode_estimation,
-
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
@@ -98,7 +97,6 @@ source_data_deduped as (  -- NEW CTE
     src_id,
    mode_estimation_id,
 mode_estimation,
-
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -113,7 +111,7 @@ mode_estimation,
     s.src_id,
    s.mode_estimation_id,
 s.mode_estimation,
-
+s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
   from source_data_deduped s
@@ -134,7 +132,6 @@ s.mode_estimation,
     t.src_id,
    t.mode_estimation_id,
 t.mode_estimation,
-
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -164,7 +161,6 @@ t.mode_estimation,
     t.src_id,
        t.mode_estimation_id,
 t.mode_estimation,
-
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
@@ -189,7 +185,6 @@ t.mode_estimation,
     src_id,
    mode_estimation_id,
 mode_estimation,
-
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -203,7 +198,6 @@ mode_estimation,
     src_id,
    mode_estimation_id,
 mode_estimation,
-
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -227,7 +221,6 @@ select
   src_id,
  mode_estimation_id,
 mode_estimation,
-
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date
