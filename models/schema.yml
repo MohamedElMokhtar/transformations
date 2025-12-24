@@ -322,6 +322,20 @@ models:
     config:
       schema: transformed 
 
+
+             # TABLE mode_estimation
+  - name: dim_mode_estimation
+    description: "... dimension"
+    columns:
+
+      - name: mode_estimation_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed 
   # # TABLE
   # - name: dim_...
   #   description: "... dimension"
