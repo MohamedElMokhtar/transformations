@@ -7,7 +7,7 @@
 }}
 
 /*
-  SCD2 Implementation for decsion recours
+  SCD2 Implementation for decsion recour
 */
 
 
