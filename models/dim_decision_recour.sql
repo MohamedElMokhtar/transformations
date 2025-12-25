@@ -21,7 +21,7 @@
 -- Step 1: Collect all type_decision_recour from all RAW source tables
 with all_type_decision_recour as (
   select
-    id as desicion_id,
+    id as decision_id,
     designation_latin as decision,
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
@@ -31,7 +31,7 @@ with all_type_decision_recour as (
   union all
   
   select
-    id as desicion_id,
+    id as decision_id,
     designation_latin as decision,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
@@ -41,7 +41,7 @@ with all_type_decision_recour as (
   union all
   
   select
-    id as desicion_id,
+    id as decision_id,
     designation_latin as decision,
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
@@ -51,7 +51,7 @@ with all_type_decision_recour as (
   union all
   
   select
-    id as desicion_id,
+    id as decision_id,
     designation_latin as decision,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
@@ -61,7 +61,7 @@ with all_type_decision_recour as (
   union all
   
   select
-    id as desicion_id,
+    id as decision_id,
     designation_latin as decision,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
