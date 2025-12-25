@@ -337,8 +337,8 @@ models:
     config:
       schema: transformed 
 
-      # TABLE type_decision_recours
-  - name: dim_type_decision_recour
+      # TABLE type_decision_recour
+  - name: dim_decision_recour
     description: "... dimension"
     columns:
 
