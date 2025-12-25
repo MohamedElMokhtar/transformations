@@ -364,6 +364,10 @@ models:
           - not_null
 
 
+    config:
+      schema: transformed 
+
+
 # TABLE statut_usagers
   - name: dim_statut_usagers
     description: "... dimension"
