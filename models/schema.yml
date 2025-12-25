@@ -380,7 +380,7 @@ models:
       schema: transformed 
 
 # TABLE type_activité
-  - name: dim_type_activite
+  - name: dim_type_activité
     description: "... dimension"
     columns:
 
