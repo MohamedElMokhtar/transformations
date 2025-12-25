@@ -24,8 +24,8 @@ with all_type_decision_recour as (
   union all
   
   select
-    id,
-    designation_latin,
+     id as decision_id,
+    designation_latin as decision,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -34,8 +34,8 @@ with all_type_decision_recour as (
   union all
   
   select
-    id,
-    designation_latin,
+    id as decision_id,
+    designation_latin as decision,
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -44,8 +44,8 @@ with all_type_decision_recour as (
   union all
   
   select
-    id,
-    designation_latin,
+    id as decision_id,
+    designation_latin as decision,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -54,8 +54,8 @@ with all_type_decision_recour as (
   union all
   
   select
-    id,
-    designation_latin,
+     id as decision_id,
+    designation_latin as decision,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
