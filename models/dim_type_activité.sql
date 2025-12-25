@@ -7,7 +7,7 @@
 }}
 
 /*
-  SCD2 Implementation for type activité
+  SCD2 Implementation for type activite
 */
 
 
