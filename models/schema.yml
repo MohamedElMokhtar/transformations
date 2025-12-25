@@ -338,11 +338,26 @@ models:
       schema: transformed 
 
       # TABLE type_decision_recours
-  - name: dim_type_decision_recours
+  - name: dim_type_decision_recour
     description: "... dimension"
     columns:
 
       - name: decision_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: transformed 
+
+
+      # TABLE etat_usagers
+  - name: dim_etat_usagers
+    description: "... dimension"
+    columns:
+
+      - name: etat_usagers_id
         description: "Primary key"
         tests:
           - unique
