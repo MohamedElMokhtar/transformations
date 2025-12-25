@@ -363,6 +363,19 @@ models:
           - unique
           - not_null
 
+
+# TABLE statut_usagers
+  - name: dim_statut_usagers
+    description: "... dimension"
+    columns:
+
+      - name: statut_usager_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+
     config:
       schema: transformed 
   # # TABLE
