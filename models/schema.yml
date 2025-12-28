@@ -230,6 +230,17 @@ models:
     config:
       schema: dwh
 
+  # TABLE communes
+  - name: dim_communes
+    description: "dim ..."
+    columns:
+      - name: src_id
+        description: "Primary key of the fact table"
+        tests:
+          - not_null
+    config:
+      schema: dwh
+
 
   # # TABLE
   # - name: dim_...
@@ -283,3 +294,37 @@ models:
 
     config:
       schema: dwh
+
+  - name: fact_prelevement
+    description: "Fact table for Prelevement"
+
+    columns:
+
+      - name: prelevement_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh
+
+  - name: fact_mise_en_demeure
+    description: "Fact table for Mise en demeure"
+    columns:
+
+      - name: src_id
+        description: "Primary key of the fact table"
+        tests:
+          - not_null
+
+      - name: date_med
+        description: "Foreign key to dim_date.full_date"
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: full_date
+
+    config:
+      schema: dwh
+
