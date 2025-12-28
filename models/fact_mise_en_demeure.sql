@@ -117,11 +117,11 @@ source_data_deduped as (  -- NEW CTE
 , changed_records as (
   select
     s.src_id,
-    mdemeure_id,
-    usager_id,
-    montant_net,
-    penalite,
-    facture_id,
+    s.mdemeure_id,
+    s.usager_id,
+    s.montant_net,
+    s.penalite,
+    s.facture_id,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at

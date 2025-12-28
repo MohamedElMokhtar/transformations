@@ -97,8 +97,8 @@ source_data_deduped as (  -- NEW CTE
 , changed_records as (
   select
     s.src_id,
-    etat_usagers_id,
-    etat_usager,
+    s.etat_usagers_id,
+    s.etat_usager,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
