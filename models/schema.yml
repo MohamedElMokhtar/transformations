@@ -230,7 +230,7 @@ models:
     config:
       schema: dwh
 
-  # TABLE communes
+  # communes
   - name: dim_communes
     description: "dim ..."
     columns:
@@ -242,26 +242,150 @@ models:
       schema: dwh
 
 
-  # # TABLE
-  # - name: dim_...
-  #   description: "... dimension"
-  #   columns:
+  # TABLE type_etat_compteur
+  - name: dim_type_etat_compteur
+    description: "... dimension"
+    columns:
 
-  #     - name: ..._id
-  #       description: "Primary key"
-  #       tests:
-  #         - unique
-  #         - not_null
+      - name: etat_compteur_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
 
-  #   config:
-  #     schema: dwh
+    config:
+      schema: dwh
+
+
+  # TABLE usagers
+  - name: dim_usagers
+    description: "... dimension"
+    columns:
+
+      - name: usagers_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+
+
+  # TABLE exercice
+  - name: dim_exercices
+    description: "... dimension"
+    columns:
+
+      - name: exercice_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+
+
+  # TABLE recours
+  - name: dim_recours
+    description: "... dimension"
+    columns:
+
+      - name: recours_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+
+  
+  # TABLE p_eau
+  - name: dim_p_eau
+    description: "... dimension"
+    columns:
+
+      - name: p_eau_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+
+
+  # TABLE type_paiement
+  - name: dim_type_paiement
+    description: "... dimension"
+    columns:
+
+      - name: type_paie_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+  
+  
+  # TABLE type_nature_p_eau
+  - name: dim_type_nature_p_eau
+    description: "... dimension"
+    columns:
+
+      - name: nature_p_eau_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+
+  
+  # TABLE type_usagers
+  - name: dim_type_usagers
+    description: "... dimension"
+    columns:
+
+      - name: type_usagers_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh 
+
+
+  
+  # TABLE mode_estimation
+  - name: dim_mode_estimation
+    description: "... dimension"
+    columns:
+
+      - name: mode_estimation_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+    config:
+      schema: dwh
+
+
+
 
 
   ############
   # FACTS
   ############
   
-  # 
+  # FACTURES
   - name: fact_factures
     description: "Fact table for factures"
     columns:
@@ -281,6 +405,7 @@ models:
     config:
       schema: dwh
           
+  # ENCAISSEMENT
   - name: fact_encaissement
     description: "Fact table for encaissement"
     columns:
@@ -295,6 +420,7 @@ models:
     config:
       schema: dwh
 
+  # PRELEVEMENT
   - name: fact_prelevement
     description: "Fact table for Prelevement"
 
@@ -309,6 +435,7 @@ models:
     config:
       schema: dwh
 
+  # MDEMEURE
   - name: fact_mise_en_demeure
     description: "Fact table for Mise en demeure"
     columns:
