@@ -455,3 +455,9 @@ models:
     config:
       schema: dwh
 
+  # TEST
+  - name: test
+    description: "Fact table for Mise en demeure"
+
+    config:
+      schema: dwh
