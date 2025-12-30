@@ -7,106 +7,78 @@
 }}
 
 /*
-  SCD2 Implementation
+  SCD2 Implementation for wilaya
 */
--- Step 1: Collect all prelevement_volume from all RAW source tables
-with all_prelevement_volume as (
+
+
+-- Step 1: Collect all wilaya from all RAW source tables
+with all_wilaya as (
   select
-    id as prelevement_id,
-    p_eau_id,
-    type_estimation_id as mode_estimation_id,
-    unite_id as usagers_id,
-    exercice_id,
-    volume as volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    "ID" as wilaya_id,
+    designation_latin as wilaya,
+    code_wilaya,
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('public', 'ahs_prelevement_volume') }}
+  from {{ source('public', 'ahs_wilaya') }}
   
   union all
   
   select
-    id as prelevement_id,
-    p_eau_id,
-    type_estimation_id as mode_estimation_id,
-    unite_id as usagers_id,
-    exercice_id,
-    volume as volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'csm_prelevement_volume') }}
+  from {{ source('public', 'csm_wilaya') }}
   
   union all
   
   select
-    id as prelevement_id,
-    p_eau_id,
-    type_estimation_id as mode_estimation_id,
-    unite_id as usagers_id,
-    exercice_id,
-    volume as volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'occ_prelevement_volume') }}
+  from {{ source('public', 'occ_wilaya') }}
   
   union all
   
   select
-    id as prelevement_id,
-    p_eau_id,
-    type_estimation_id as mode_estimation_id,
-    unite_id as usagers_id,
-    exercice_id,
-    volume as volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'cz_prelevement_volume') }}
+  from {{ source('public', 'cz_wilaya') }}
   
   union all
   
   select
-    id as prelevement_id,
-    p_eau_id,
-    type_estimation_id as mode_estimation_id,
-    unite_id as usagers_id,
-    exercice_id,
-    volume as volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    "ID",
+    designation_latin,
+    code_wilaya,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('public', 'sahara_prelevement_volume') }}
+  from {{ source('public', 'sahara_wilaya') }}
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
 source_data as (
   select
-    src || '_' || prelevement_id as src_id,
-    prelevement_id,
-    p_eau_id,
-    mode_estimation_id,
-    usagers_id,
-    exercice_id,
-    volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    src || '_' || wilaya_id as src_id,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    row_number() over (partition by src || '_' || prelevement_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
-  from all_prelevement_volume
+    row_number() over (partition by src || '_' || wilaya_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
+  from all_wilaya
   {% if is_incremental() %}
   -- Only process records that have been updated since last run
   where _ab_cdc_updated_at > (select max(_ab_cdc_updated_at) from {{ this }})
@@ -117,14 +89,9 @@ source_data as (
 source_data_deduped as (  -- NEW CTE
   select
     src_id,
-    prelevement_id,
-    p_eau_id,
-    mode_estimation_id,
-    usagers_id,
-    exercice_id,
-    volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -137,14 +104,9 @@ source_data_deduped as (  -- NEW CTE
 , changed_records as (
   select
     s.src_id,
-    s.prelevement_id,
-    s.p_eau_id,
-    s.mode_estimation_id,
-    s.usagers_id,
-    s.exercice_id,
-    s.volume_prelevé,
-    s.ancien_index,
-    s.nouveau_index,
+    s.wilaya_id,
+    s.wilaya,
+    s.code_wilaya,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -155,13 +117,8 @@ source_data_deduped as (  -- NEW CTE
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.p_eau_id is distinct from t.p_eau_id)
-    or (s.mode_estimation_id is distinct from t.mode_estimation_id)
-    or (s.usagers_id is distinct from t.usagers_id)
-    or (s.exercice_id is distinct from t.exercice_id)
-    or (s.volume_prelevé is distinct from t.volume_prelevé)
-    or (s.ancien_index is distinct from t.ancien_index)
-    or (s.nouveau_index is distinct from t.nouveau_index)
+    (s.wilaya is distinct from t.wilaya)
+    or (s.code_wilaya is distinct from t.code_wilaya)
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -169,14 +126,9 @@ source_data_deduped as (  -- NEW CTE
   select
     t.surrogate_key,
     t.src_id,
-    t.prelevement_id,
-    t.p_eau_id,
-    t.mode_estimation_id,
-    t.usagers_id,
-    t.exercice_id,
-    t.volume_prelevé,
-    t.ancien_index,
-    t.nouveau_index,
+    t.wilaya_id,
+    t.wilaya,
+    t.code_wilaya,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -204,22 +156,17 @@ source_data_deduped as (  -- NEW CTE
   select
     t.surrogate_key,
     t.src_id,
-    t.prelevement_id,
-    t.p_eau_id,
-    t.mode_estimation_id,
-    t.usagers_id,
-    t.exercice_id,
-    t.volume_prelevé,
-    t.ancien_index,
-    t.nouveau_index,
+    t.wilaya_id,
+    t.wilaya,
+    t.code_wilaya,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
     s._ab_cdc_deleted_at as valid_to,  -- Use actual deletion timestamp from CDC
     false as is_current                 -- Mark as deleted/historical    
   from {{ this }} t
-  inner join all_prelevement_volume s
-    on t.src_id = (s.src || '_' || s.prelevement_id)
+  inner join all_wilaya s
+    on t.src_id = (s.src || '_' || s.wilaya_id)
   where t.is_current = true
     and s._ab_cdc_deleted_at is not null  -- Record has been deleted
 )
@@ -234,14 +181,9 @@ source_data_deduped as (  -- NEW CTE
   -- New versions of existing records that changed
   select 
     src_id,
-    prelevement_id,
-    p_eau_id,
-    mode_estimation_id,
-    usagers_id,
-    exercice_id,
-    volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -253,14 +195,9 @@ source_data_deduped as (  -- NEW CTE
   select
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
-    prelevement_id,
-    p_eau_id,
-    mode_estimation_id,
-    usagers_id,
-    exercice_id,
-    volume_prelevé,
-    ancien_index,
-    nouveau_index,
+    wilaya_id,
+    wilaya,
+    code_wilaya,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -282,14 +219,9 @@ select * from final_inserts   -- New current versions
 select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
-  prelevement_id,
-  p_eau_id,
-  mode_estimation_id,
-  usagers_id,
-  exercice_id,
-  volume_prelevé,
-  ancien_index,
-  nouveau_index,
+  wilaya_id,
+  wilaya,
+  code_wilaya,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date

@@ -398,6 +398,37 @@ models:
     config:
       schema: transformed 
 
+
+# TABLE wilaya
+  - name: dim_wilaya
+    description: "... dimension"
+    columns:
+
+      - name: wilaya_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+
+    config:
+      schema: transformed 
+
+
+      # TABLE mise_en_demeure
+  - name: fact_mise_en_demeure
+    description: "... dimension"
+    columns:
+
+      - name: mdemeure_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+
+    config:
+      schema: transformed 
   # # TABLE
   # - name: dim_...
   #   description: "... dimension"
