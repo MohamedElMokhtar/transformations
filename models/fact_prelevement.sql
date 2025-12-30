@@ -20,6 +20,8 @@ with all_prelevement_volume as (
     unite_id as usagers_id,
     exercice_id,
     volume as volume_preleve,
+    ancien_index,
+    nouveau_index,
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
@@ -34,6 +36,8 @@ with all_prelevement_volume as (
     unite_id as usagers_id,
     exercice_id,
     volume as volume_preleve,
+    ancien_index,
+    nouveau_index,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -48,6 +52,8 @@ with all_prelevement_volume as (
     unite_id as usagers_id,
     exercice_id,
     volume as volume_preleve,
+    ancien_index,
+    nouveau_index,
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -62,6 +68,8 @@ with all_prelevement_volume as (
     unite_id as usagers_id,
     exercice_id,
     volume as volume_preleve,
+    ancien_index,
+    nouveau_index,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -76,6 +84,8 @@ with all_prelevement_volume as (
     unite_id as usagers_id,
     exercice_id,
     volume as volume_preleve,
+    ancien_index,
+    nouveau_index,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -92,6 +102,8 @@ source_data as (
     usagers_id,
     exercice_id,
     volume_preleve,
+    ancien_index,
+    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
@@ -113,6 +125,8 @@ source_data_deduped as (  -- NEW CTE
     usagers_id,
     exercice_id,
     volume_preleve,
+    ancien_index,
+    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -131,6 +145,8 @@ source_data_deduped as (  -- NEW CTE
     s.usagers_id,
     s.exercice_id,
     s.volume_preleve,
+    s.ancien_index,
+    s.nouveau_index,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -146,6 +162,8 @@ source_data_deduped as (  -- NEW CTE
     or (s.usagers_id is distinct from t.usagers_id)
     or (s.exercice_id is distinct from t.exercice_id)
     or (s.volume_preleve is distinct from t.volume_preleve)
+    or (s.ancien_index is distinct from t.ancien_index)
+    or (s.nouveau_index is distinct from t.nouveau_index)
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -159,6 +177,8 @@ source_data_deduped as (  -- NEW CTE
     t.usagers_id,
     t.exercice_id,
     t.volume_preleve,
+    t.ancien_index,
+    t.nouveau_index,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -192,6 +212,8 @@ source_data_deduped as (  -- NEW CTE
     t.usagers_id,
     t.exercice_id,
     t.volume_preleve,
+    t.ancien_index,
+    t.nouveau_index,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
@@ -220,6 +242,8 @@ source_data_deduped as (  -- NEW CTE
     usagers_id,
     exercice_id,
     volume_preleve,
+    ancien_index,
+    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -237,6 +261,8 @@ source_data_deduped as (  -- NEW CTE
     usagers_id,
     exercice_id,
     volume_preleve,
+    ancien_index,
+    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -264,6 +290,8 @@ select
   usagers_id,
   exercice_id,
   volume_preleve,
+  ancien_index,
+  nouveau_index,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date
