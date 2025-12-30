@@ -41,8 +41,6 @@ with all_factures as (
     montant_net as montant_paye,
     montant_brute as montant_total,
     volume,
-    ancien_index,
-    nouveau_index,
     'AHS' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
@@ -61,8 +59,6 @@ with all_factures as (
     montant_net,
     montant_brute,
     volume,
-    ancien_index,
-    nouveau_index,
     'CSM' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -81,8 +77,6 @@ with all_factures as (
     montant_net,
     montant_brute,
     volume,
-    ancien_index,
-    nouveau_index,
     'OCC' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -101,8 +95,6 @@ with all_factures as (
     montant_net,
     montant_brute,
     volume,
-    ancien_index,
-    nouveau_index,
     'CZ' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -121,8 +113,6 @@ with all_factures as (
     montant_net,
     montant_brute,
     volume,
-    ancien_index,
-    nouveau_index,
     'SAHARA' as src,
     _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
@@ -143,8 +133,6 @@ source_data as (
     montant_paye,
     montant_total,
     volume,
-    ancien_index,
-    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
@@ -170,8 +158,6 @@ source_data_deduped as (  -- NEW CTE
     montant_paye,
     montant_total,
     volume,
-    ancien_index,
-    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -194,8 +180,6 @@ source_data_deduped as (  -- NEW CTE
     s.montant_paye,
     s.montant_total,
     s.volume,
-    s.ancien_index,
-    s.nouveau_index,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -214,8 +198,6 @@ source_data_deduped as (  -- NEW CTE
     or (s.montant_paye is distinct from t.montant_paye)
     or (s.montant_total is distinct from t.montant_total)
     or (s.volume is distinct from t.volume)
-    or (s.ancien_index is distinct from t.ancien_index)
-    or (s.nouveau_index is distinct from t.nouveau_index)
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -233,8 +215,6 @@ source_data_deduped as (  -- NEW CTE
     t.montant_paye,
     t.montant_total,
     t.volume,
-    t.ancien_index,
-    t.nouveau_index,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -272,8 +252,6 @@ source_data_deduped as (  -- NEW CTE
     t.montant_paye,
     t.montant_total,
     t.volume,
-    t.ancien_index,
-    t.nouveau_index,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
@@ -306,8 +284,6 @@ source_data_deduped as (  -- NEW CTE
     montant_paye,
     montant_total,
     volume,
-    ancien_index,
-    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -329,8 +305,6 @@ source_data_deduped as (  -- NEW CTE
     montant_paye,
     montant_total,
     volume,
-    ancien_index,
-    nouveau_index,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -362,8 +336,6 @@ select
   montant_paye,
   montant_total,
   volume,
-  ancien_index,
-  nouveau_index,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date
