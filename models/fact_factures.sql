@@ -19,6 +19,7 @@
   - Maintains validity periods (valid_from, valid_to)
   - Identifies current records with is_current flag
   - Uses surrogate keys for unique version identification
+  - References dim_date for date_fact using date_id
   
   SCD2 Columns:
   - surrogate_key: Unique identifier for each record version
@@ -42,8 +43,8 @@ with all_factures as (
     montant_brute as montant_total,
     volume,
     'AHS' as src,
-    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
-    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
+    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('__raw_', 'ahs_factures') }}
   
   union all
@@ -136,16 +137,15 @@ source_data as (
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
-    row_number() over (partition by src || '_' || facture_id order by _ab_cdc_updated_at desc) as rn  -- ADDED
+    row_number() over (partition by src || '_' || facture_id order by _ab_cdc_updated_at desc) as rn
   from all_factures
   {% if is_incremental() %}
-  -- Only process records that have been updated since last run
   where _ab_cdc_updated_at > (select max(_ab_cdc_updated_at) from {{ this }})
   {% endif %}
 ),
 
 -- Dedup (in case a row is added then modified before syncing)
-source_data_deduped as (  -- NEW CTE
+source_data_deduped as (
   select
     src_id,
     num_facture,
@@ -162,7 +162,29 @@ source_data_deduped as (  -- NEW CTE
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
   from source_data
-  where rn = 1  -- Keep only the most recent version
+  where rn = 1
+),
+
+-- Step 3: Join with dim_date to get date_id
+source_with_date_id as (
+  select
+    s.src_id,
+    s.num_facture,
+    s.facture_id,
+    s.exercice_id,
+    s.p_eau_id,
+    s.usagers_id,
+    d.date_id as date_fact_id,  -- Get date_id from dimension
+    s.montant_anterieur,
+    s.montant_paye,
+    s.montant_total,
+    s.volume,
+    s.src,
+    s._ab_cdc_updated_at,
+    s._ab_cdc_deleted_at
+  from source_data_deduped s
+  left join {{ ref('dim_date') }} d
+    on s.date_fact::date = d.full_date
 )
 
 {% if is_incremental() %}
@@ -175,7 +197,7 @@ source_data_deduped as (  -- NEW CTE
     s.exercice_id,
     s.p_eau_id,
     s.usagers_id,
-    s.date_fact,
+    s.date_fact_id,
     s.montant_anterieur,
     s.montant_paye,
     s.montant_total,
@@ -183,24 +205,23 @@ source_data_deduped as (  -- NEW CTE
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
-  from source_data_deduped s
+  from source_with_date_id s
   inner join {{ this }} t
     on s.src_id = t.src_id
-    and t.is_current = true -- Only compare against current versions
+    and t.is_current = true
   where
-    -- Check if any business attributes have changed
-    -- IS DISTINCT FROM handles NULL comparisons correctly
     (s.num_facture is distinct from t.num_facture)
     or (s.exercice_id is distinct from t.exercice_id)
     or (s.p_eau_id is distinct from t.p_eau_id)
     or (s.usagers_id is distinct from t.usagers_id)
+    or (s.date_fact_id is distinct from t.date_fact_id)  -- Compare date_id instead of date
     or (s.montant_anterieur is distinct from t.montant_anterieur)
     or (s.montant_paye is distinct from t.montant_paye)
     or (s.montant_total is distinct from t.montant_total)
     or (s.volume is distinct from t.volume)
 )
 
--- Step 5: Expire old versions of changed records by setting end date and is_current flag
+-- Step 5: Expire old versions of changed records
 , expired_records as (
   select
     t.surrogate_key,
@@ -210,34 +231,34 @@ source_data_deduped as (  -- NEW CTE
     t.exercice_id,
     t.p_eau_id,
     t.usagers_id,
-    t.date_fact,
+    t.date_fact_id,
     t.montant_anterieur,
     t.montant_paye,
     t.montant_total,
     t.volume,
     t.src,
     t._ab_cdc_updated_at,
-    t.valid_from,                      -- Keep original start date
-    c._ab_cdc_updated_at as valid_to,  -- End when the new version became valid
-    false as is_current                -- Mark as historical
+    t.valid_from,
+    c._ab_cdc_updated_at as valid_to,
+    false as is_current
   from {{ this }} t
   inner join changed_records c
     on t.src_id = c.src_id
   where t.is_current = true
 )
 
--- Step 6: Identify completely new records (not existing in target)
+-- Step 6: Identify completely new records
 , new_records as (
   select
     s.*
-  from source_data_deduped s
+  from source_with_date_id s
   left join {{ this }} t
     on s.src_id = t.src_id
-  where t.src_id is null -- Only records not found in target
-    and s._ab_cdc_deleted_at is null  -- Exclude records that are already deleted
+  where t.src_id is null
+    and s._ab_cdc_deleted_at is null
 )
 
--- Step 7: Detect deleted records (exist in target but not in source)
+-- Step 7: Detect deleted records
 , deleted_records as (
   select
     t.surrogate_key,
@@ -247,7 +268,7 @@ source_data_deduped as (  -- NEW CTE
     t.exercice_id,
     t.p_eau_id,
     t.usagers_id,
-    t.date_fact,
+    t.date_fact_id,
     t.montant_anterieur,
     t.montant_paye,
     t.montant_total,
@@ -255,23 +276,21 @@ source_data_deduped as (  -- NEW CTE
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
-    s._ab_cdc_deleted_at as valid_to,  -- Use actual deletion timestamp from CDC
-    false as is_current                 -- Mark as deleted/historical    
+    s._ab_cdc_deleted_at as valid_to,
+    false as is_current
   from {{ this }} t
   inner join all_factures s
     on t.src_id = (s.src || '_' || s.facture_id)
   where t.is_current = true
-    and s._ab_cdc_deleted_at is not null  -- Record has been deleted
+    and s._ab_cdc_deleted_at is not null
 )
 
 -- Step 8: Combine new records and new versions of changed records
 , records_to_insert as (
-  -- New records
   select * from new_records
 
   union all
 
-  -- New versions of existing records that changed
   select 
     src_id,
     num_facture,
@@ -279,7 +298,7 @@ source_data_deduped as (  -- NEW CTE
     exercice_id,
     p_eau_id,
     usagers_id,
-    date_fact,
+    date_fact_id,
     montant_anterieur,
     montant_paye,
     montant_total,
@@ -293,32 +312,32 @@ source_data_deduped as (  -- NEW CTE
 -- Step 9: Add SCD2 metadata columns to records being inserted
 , final_inserts as (
   select
-    {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
+    {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
     src_id,
     num_facture,
     facture_id,
     exercice_id,
     p_eau_id,
     usagers_id,
-    date_fact,
+    date_fact_id,
     montant_anterieur,
     montant_paye,
     montant_total,
     volume,
     src,
     _ab_cdc_updated_at,
-    _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
-    null::timestamp as valid_to,      -- NULL = current record
-    true as is_current                -- Mark as active version
+    _ab_cdc_updated_at as valid_from,
+    null::timestamp as valid_to,
+    true as is_current
   from records_to_insert
 )
 
 -- Step 10: Return both expired records and new inserts
-select * from expired_records -- Historical versions with end dates
+select * from expired_records
 union all
 select * from deleted_records
 union all
-select * from final_inserts   -- New current versions
+select * from final_inserts
 
 {% else %}
 
@@ -331,16 +350,16 @@ select
   exercice_id,
   p_eau_id,
   usagers_id,
-  date_fact,
+  date_fact_id,
   montant_anterieur,
   montant_paye,
   montant_total,
   volume,
   src,
   _ab_cdc_updated_at,
-  _ab_cdc_updated_at as valid_from, -- Set start date
-  null::timestamp as valid_to,      -- No end date (current)
-  true as is_current                -- All records are current on initial load
-from source_data_deduped
+  _ab_cdc_updated_at as valid_from,
+  null::timestamp as valid_to,
+  true as is_current
+from source_with_date_id
 
 {% endif %}
