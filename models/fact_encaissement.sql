@@ -66,7 +66,11 @@ with all_payements as (
   select
     id as encaissement_id,
     exercice_id,
-    mode_paie_id as type_paie_id,
+    case 
+      when mode_paie_id = 4 then 1
+      when mode_paie_id = 0 then 0
+      else mode_paie_id + 1
+    end as type_paie_id,
     unite_id as usager_id,
     date_paie as date_encaissement,
     montant_percu as montant_total,
