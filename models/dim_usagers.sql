@@ -214,10 +214,6 @@ t.reference,
 t.nom,
 t.date_activite,
 t.date_arret,
-  case 
-    when t.date_arret is null then 'actif'
-    else 'inactif'
-  end as t.etat,
 t.adresse,
     t.src,
     t._ab_cdc_updated_at,
@@ -256,10 +252,6 @@ t.reference,
 t.nom,
 t.date_activite,
 t.date_arret,
-  case 
-    when t.date_arret is null then 'actif'
-    else 'inactif'
-  end as t.etat,
 t.adresse,
     t.src,
     t._ab_cdc_updated_at,
@@ -315,10 +307,6 @@ reference,
 nom,
 date_activite,
 date_arret,
-  case 
-    when date_arret is null then 'actif'
-    else 'inactif'
-  end as etat,
 adresse,
     src,
     _ab_cdc_updated_at,
@@ -351,10 +339,6 @@ reference,
 nom,
 date_activite,
 date_arret,
-  case 
-    when date_arret is null then 'actif'
-    else 'inactif'
-  end as etat,
 adresse,
   src,
   _ab_cdc_updated_at,
