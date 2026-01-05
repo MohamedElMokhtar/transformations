@@ -21,97 +21,107 @@
 -- Step 1: Collect all unites from all RAW source tables
 with all_unites as (
   select
-      "Id" as usagers_id,
-  commune_id,
-  type_unite_id as type_usagers_id,
-  statut_unite_id as status_usagers_id,
-  etat_unite_id as etat_usagers_id,
-  type_activite_id,
-  reference,
-  nom_latin as nom,
-  dateactive as date_activite,
-  datearret as date_arret,
-  adresse_latin as adresse,
+      u."Id" as usagers_id,
+  c.code_com as code_commune,
+  u.type_unite_id as type_usagers_id,
+  u.statut_unite_id as status_usagers_id,
+  u.etat_unite_id as etat_usagers_id,
+  u.type_activite_id,
+  u.reference,
+  u.nom_latin as nom,
+  u.dateactive as date_activite,
+  u.datearret as date_arret,
+  u.adresse_latin as adresse,
     'AHS' as src,
-    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at, -- CDC timestamp for tracking changes
-    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at  -- CDC timestamp for deletions
-  from {{ source('__raw_', 'ahs_unites') }}                                       -- ######################## To be changed
+    u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('__raw_', 'ahs_unites') }} u
+  left join {{ source('__raw_', 'ahs_communes') }} c
+    on u.commune_id = c."Id"
   
   union all
   
   select
-      "Id" as usagers_id,
-  commune_id,
-  type_unite_id as type_usagers_id,
-  statut_unite_id as status_usagers_id,
-  etat_unite_id as etat_usagers_id,
-  type_activite_id,
-  reference,
-  nom_latin as nom,
-  dateactive as date_activite,
-  datearret as date_arret,
-  adresse_latin as adresse,
+      u."Id" as usagers_id,
+  c.code_com as code_commune,
+  u.type_unite_id as type_usagers_id,
+  u.statut_unite_id as status_usagers_id,
+  u.etat_unite_id as etat_usagers_id,
+  u.type_activite_id,
+  u.reference,
+  u.nom_latin as nom,
+  u.dateactive as date_activite,
+  u.datearret as date_arret,
+  u.adresse_latin as adresse,
     'CSM' as src,
-    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
-    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'csm_unites') }}                                       -- ######################## To be changed
+    u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('__raw_', 'csm_unites') }} u
+  left join {{ source('__raw_', 'csm_communes') }} c
+    on u.commune_id = c."Id"
   
   union all
   
   select
-     "Id" as usagers_id,
-  commune_id,
-  type_unite_id as type_usagers_id,
-  statut_unite_id as status_usagers_id,
-  etat_unite_id as etat_usagers_id,
-  type_activite_id,
-  reference,
-  nom_latin as nom,
-  dateactive as date_activite,
-  datearret as date_arret,
-  adresse_latin as adresse,
+     u."Id" as usagers_id,
+  c.code_com as code_commune,
+  u.type_unite_id as type_usagers_id,
+  u.statut_unite_id as status_usagers_id,
+  u.etat_unite_id as etat_usagers_id,
+  u.type_activite_id,
+  u.reference,
+  u.nom_latin as nom,
+  u.dateactive as date_activite,
+  u.datearret as date_arret,
+  u.adresse_latin as adresse,
     'OCC' as src,
-    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
-    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'occ_unites') }}                                       -- ######################## To be changed
+    u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('__raw_', 'occ_unites') }} u
+  left join {{ source('__raw_', 'occ_communes') }} c
+    on u.commune_id = c."Id"
   
   union all
   
   select
-     "Id" as usagers_id,
-  commune_id,
-  type_unite_id as type_usagers_id,
-  statut_unite_id as status_usagers_id,
-  etat_unite_id as etat_usagers_id,
-  type_activite_id,
-  reference,
-  nom_latin as nom,
-  dateactive as date_activite,
-  datearret as date_arret,
-  adresse_latin as adresse,
+     u."Id" as usagers_id,
+  c.code_com as code_commune,
+  u.type_unite_id as type_usagers_id,
+  u.statut_unite_id as status_usagers_id,
+  u.etat_unite_id as etat_usagers_id,
+  u.type_activite_id,
+  u.reference,
+  u.nom_latin as nom,
+  u.dateactive as date_activite,
+  u.datearret as date_arret,
+  u.adresse_latin as adresse,
     'CZ' as src,
-    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
-    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'cz_unites') }}                                       -- ######################## To be changed
+    u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('__raw_', 'cz_unites') }} u
+  left join {{ source('__raw_', 'cz_communes') }} c
+    on u.commune_id = c."Id"
   
   union all
   
   select
-     "Id" as usagers_id,
-  commune_id,
-  type_unite_id as type_usagers_id,
-  statut_unite_id as status_usagers_id,
-  etat_unite_id as etat_usagers_id,
-  type_activite_id,
-  reference,
-  nom_latin as nom,
-  dateactive as date_activite,
-  datearret as date_arret,
-  adresse_latin as adresse,
+     u."Id" as usagers_id,
+  c.code_com as code_commune,
+  u.type_unite_id as type_usagers_id,
+  u.statut_unite_id as status_usagers_id,
+  u.etat_unite_id as etat_usagers_id,
+  u.type_activite_id,
+  u.reference,
+  u.nom_latin as nom,
+  u.dateactive as date_activite,
+  u.datearret as date_arret,
+  u.adresse_latin as adresse,
     'SAHARA' as src,
-    _ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
-    _ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
-  from {{ source('__raw_', 'sahara_unites') }}                                       -- ######################## To be changed
+    u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
+    u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
+  from {{ source('__raw_', 'sahara_unites') }} u
+  left join {{ source('__raw_', 'sahara_communes') }} c
+    on u.commune_id = c."Id"
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
@@ -119,7 +129,7 @@ source_data as (
   select
     src || '_' || usagers_id as src_id,
    usagers_id,
-commune_id,
+code_commune,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
@@ -145,16 +155,16 @@ source_data_deduped as (  -- NEW CTE
   select
     src_id,
     usagers_id,
-commune_id,
-type_usagers_id,
-status_usagers_id,
-etat_usagers_id,
-type_activite_id,
-reference,
-nom,
-date_activite,
-date_arret,
-adresse,
+    code_commune,
+    type_usagers_id,
+    status_usagers_id,
+    etat_usagers_id,
+    type_activite_id,
+    reference,
+    nom,
+    date_activite,
+    date_arret,
+    adresse,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -168,7 +178,7 @@ adresse,
   select
     s.src_id,
     s.usagers_id,
-s.commune_id,
+s.code_commune,
 s.type_usagers_id,
 s.status_usagers_id,
 s.etat_usagers_id,
@@ -189,7 +199,7 @@ s.adresse,
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
     (s.etat_usagers_id is distinct from t.etat_usagers_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
-    or (s.commune_id is distinct from t.commune_id)
+    or (s.code_commune is distinct from t.code_commune)
     or (s.status_usagers_id is distinct from t.status_usagers_id)
     or (s.type_activite_id is distinct from t.type_activite_id)
     or (s.reference is distinct from t.reference)
@@ -205,7 +215,7 @@ s.adresse,
     t.surrogate_key,
     t.src_id,
     t.usagers_id,
-t.commune_id,
+t.code_commune,
 t.type_usagers_id,
 t.status_usagers_id,
 t.etat_usagers_id,
@@ -243,7 +253,7 @@ t.adresse,
     t.surrogate_key,
     t.src_id,
     t.usagers_id,
-t.commune_id,
+t.code_commune,
 t.type_usagers_id,
 t.status_usagers_id,
 t.etat_usagers_id,
@@ -276,7 +286,7 @@ t.adresse,
   select 
     src_id,
    usagers_id,
-commune_id,
+code_commune,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
@@ -298,7 +308,7 @@ adresse,
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
     usagers_id,
-commune_id,
+code_commune,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
@@ -330,7 +340,7 @@ select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   usagers_id,
-commune_id,
+code_commune,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
