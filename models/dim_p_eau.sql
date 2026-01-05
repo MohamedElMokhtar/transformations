@@ -22,7 +22,7 @@
 with all_P_eau as (
   select
    id as p_eau_id,
-  nature_id as nature__p_eau_id,
+  nature_id as nature_p_eau_id,
   etat_compteur_id,
   "type_estimation_id" as mode_estimation_id,
  unite_id as usagers_id, 
@@ -38,7 +38,7 @@ with all_P_eau as (
   
   select
     id as p_eau_id,
-  nature_id as nature__p_eau_id,
+  nature_id as nature_p_eau_id,
   etat_compteur_id,
   "type_estimation_id" as mode_estimation_id,
  unite_id as usagers_id, 
@@ -54,7 +54,7 @@ with all_P_eau as (
   
   select
    id as p_eau_id,
-  nature_id as nature__p_eau_id,
+  case when nature_id = 5 then 7 else nature_id end as nature_p_eau_id,
   etat_compteur_id,
   "type_estimation_id" as mode_estimation_id,
  unite_id as usagers_id, 
@@ -70,7 +70,7 @@ with all_P_eau as (
   
   select
    id as p_eau_id,
-  nature_id as nature__p_eau_id,
+  nature_id as nature_p_eau_id,
   etat_compteur_id,
   "type_estimation_id" as mode_estimation_id,
  unite_id as usagers_id, 
@@ -86,7 +86,7 @@ with all_P_eau as (
   
   select
    id as p_eau_id,
-  nature_id as nature__p_eau_id,
+  nature_id as nature_p_eau_id,
   etat_compteur_id,
   "type_estimation_id" as mode_estimation_id,
  unite_id as usagers_id, 
@@ -104,7 +104,7 @@ source_data as (
   select
     src || '_' || p_eau_id as src_id,
    p_eau_id,
-nature__p_eau_id,
+nature_p_eau_id,
 etat_compteur_id,
 mode_estimation_id,
 usagers_id, 
@@ -126,7 +126,7 @@ source_data_deduped as (  -- NEW CTE
   select
     src_id,
     p_eau_id,
-nature__p_eau_id,
+nature_p_eau_id,
 etat_compteur_id,
 mode_estimation_id,
 usagers_id, 
@@ -145,7 +145,7 @@ date_arret,
   select
     s.src_id,
    s.p_eau_id,
-s.nature__p_eau_id,
+s.nature_p_eau_id,
 s.etat_compteur_id,
 s.mode_estimation_id,
 s.usagers_id, 
@@ -161,7 +161,7 @@ s.date_arret,
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.nature__p_eau_id is distinct from t.nature__p_eau_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
+    (s.nature_p_eau_id is distinct from t.nature_p_eau_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
     or (s.etat_compteur_id is distinct from t.etat_compteur_id)
     or (s.mode_estimation_id is distinct from t.mode_estimation_id) 
     or (s.usagers_id is distinct from t.usagers_id) 
@@ -175,7 +175,7 @@ s.date_arret,
     t.surrogate_key,
     t.src_id,
    t.p_eau_id,
-t.nature__p_eau_id,
+t.nature_p_eau_id,
 t.etat_compteur_id,
 t.mode_estimation_id,
 t.usagers_id, 
@@ -209,7 +209,7 @@ t.date_arret,
     t.surrogate_key,
     t.src_id,
     t.p_eau_id,
-t.nature__p_eau_id,
+t.nature_p_eau_id,
 t.etat_compteur_id,
 t.mode_estimation_id,
 t.usagers_id, 
@@ -238,7 +238,7 @@ t.date_arret,
   select 
     src_id,
    p_eau_id,
-nature__p_eau_id,
+nature_p_eau_id,
 etat_compteur_id,
 mode_estimation_id,
 usagers_id, 
@@ -256,7 +256,7 @@ date_arret,
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
    p_eau_id,
-nature__p_eau_id,
+nature_p_eau_id,
 etat_compteur_id,
 mode_estimation_id,
 usagers_id, 
@@ -284,7 +284,7 @@ select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   p_eau_id,
-nature__p_eau_id,
+nature_p_eau_id,
 etat_compteur_id,
 mode_estimation_id,
 usagers_id, 
