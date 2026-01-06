@@ -84,7 +84,7 @@ source_data as (
     usager_id,
     montant_net,
     penalite,
-    facture_id,
+    src || '_' || facture_id as src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
@@ -104,7 +104,7 @@ source_data_deduped as (  -- NEW CTE
     usager_id,
     montant_net,
     penalite,
-    facture_id,
+    src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -121,7 +121,7 @@ source_data_deduped as (  -- NEW CTE
     s.usager_id,
     s.montant_net,
     s.penalite,
-    s.facture_id,
+    s.src_facture_id,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -135,7 +135,7 @@ source_data_deduped as (  -- NEW CTE
     (s.usager_id is distinct from t.usager_id)
     or (s.montant_net is distinct from t.montant_net)
     or (s.penalite is distinct from t.penalite)
-    or (s.facture_id is distinct from t.facture_id)
+    or (s.src_facture_id is distinct from t.src_facture_id)
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -147,7 +147,7 @@ source_data_deduped as (  -- NEW CTE
     t.usager_id,
     t.montant_net,
     t.penalite,
-    t.facture_id,
+    t.src_facture_id,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -179,7 +179,7 @@ source_data_deduped as (  -- NEW CTE
     t.usager_id,
     t.montant_net,
     t.penalite,
-    t.facture_id,
+    t.src_facture_id,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
@@ -206,7 +206,7 @@ source_data_deduped as (  -- NEW CTE
     usager_id,
     montant_net,
     penalite,
-    facture_id,
+    src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -222,7 +222,7 @@ source_data_deduped as (  -- NEW CTE
     usager_id,
     montant_net,
     penalite,
-    facture_id,
+    src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -248,7 +248,7 @@ select
   usager_id,
   montant_net,
   penalite,
-  facture_id,
+  src_facture_id,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date

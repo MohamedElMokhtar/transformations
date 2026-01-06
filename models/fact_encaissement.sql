@@ -112,7 +112,7 @@ source_data as (
     montant_total,
     montant_paye,
     montant_anterieur,
-    facture_id,
+    src || '_' || facture_id as src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at,
@@ -136,7 +136,7 @@ source_data_deduped as (  -- NEW CTE
     montant_total,
     montant_paye,
     montant_anterieur,
-    facture_id,
+    src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -157,7 +157,7 @@ source_data_deduped as (  -- NEW CTE
     s.montant_total,
     s.montant_paye,
     s.montant_anterieur,
-    s.facture_id,
+    s.src_facture_id,
     s.src,
     s._ab_cdc_updated_at,
     s._ab_cdc_deleted_at
@@ -175,7 +175,7 @@ source_data_deduped as (  -- NEW CTE
     or (s.montant_total is distinct from t.montant_total)    
     or (s.montant_paye is distinct from t.montant_paye)
     or (s.montant_anterieur is distinct from t.montant_anterieur)
-    or (s.facture_id is distinct from t.facture_id)
+    or (s.src_facture_id is distinct from t.src_facture_id)
 )
 
 -- Step 5: Expire old versions of changed records by setting end date and is_current flag
@@ -191,7 +191,7 @@ source_data_deduped as (  -- NEW CTE
     t.montant_total,
     t.montant_paye,
     t.montant_anterieur,
-    t.facture_id,
+    t.src_facture_id,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,                      -- Keep original start date
@@ -227,7 +227,7 @@ source_data_deduped as (  -- NEW CTE
     t.montant_total,
     t.montant_paye,
     t.montant_anterieur,
-    t.facture_id,
+    t.src_facture_id,
     t.src,
     t._ab_cdc_updated_at,
     t.valid_from,
@@ -258,7 +258,7 @@ source_data_deduped as (  -- NEW CTE
     montant_total,
     montant_paye,
     montant_anterieur,
-    facture_id,
+    src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_deleted_at
@@ -278,7 +278,7 @@ source_data_deduped as (  -- NEW CTE
     montant_total,
     montant_paye,
     montant_anterieur,
-    facture_id,
+    src_facture_id,
     src,
     _ab_cdc_updated_at,
     _ab_cdc_updated_at as valid_from, -- Use actual CDC timestamp when change occurred
@@ -308,7 +308,7 @@ select
   montant_total,
   montant_paye,
   montant_anterieur,
-  facture_id,
+  src_facture_id,
   src,
   _ab_cdc_updated_at,
   _ab_cdc_updated_at as valid_from, -- Set start date

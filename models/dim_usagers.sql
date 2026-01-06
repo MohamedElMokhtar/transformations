@@ -31,6 +31,7 @@ with all_unites as (
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
   u.reference,
+  w.code_wilaya,
   u.nom_latin as nom,
   u.dateactive as date_activite,
   u.datearret as date_arret,
@@ -41,6 +42,8 @@ with all_unites as (
   from {{ source('__raw_', 'ahs_unites') }} u
   left join {{ source('__raw_', 'ahs_communes') }} c
     on u.commune_id = c."Id"
+  left join {{ source('__raw_', 'ahs_wilaya') }} w
+    on u.wilaya_id = w."ID"
   
   union all
   
@@ -56,6 +59,7 @@ with all_unites as (
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
   u.reference,
+  w.code_wilaya,
   u.nom_latin as nom,
   u.dateactive as date_activite,
   u.datearret as date_arret,
@@ -66,6 +70,8 @@ with all_unites as (
   from {{ source('__raw_', 'csm_unites') }} u
   left join {{ source('__raw_', 'csm_communes') }} c
     on u.commune_id = c."Id"
+  left join {{ source('__raw_', 'csm_wilaya') }} w
+    on u.wilaya_id = w."ID"
   
   union all
   
@@ -81,6 +87,7 @@ with all_unites as (
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
   u.reference,
+  w.code_wilaya,
   u.nom_latin as nom,
   u.dateactive as date_activite,
   u.datearret as date_arret,
@@ -91,6 +98,8 @@ with all_unites as (
   from {{ source('__raw_', 'occ_unites') }} u
   left join {{ source('__raw_', 'occ_communes') }} c
     on u.commune_id = c."Id"
+  left join {{ source('__raw_', 'occ_wilaya') }} w
+    on u.wilaya_id = w."ID"
   
   union all
   
@@ -106,6 +115,7 @@ with all_unites as (
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
   u.reference,
+  w.code_wilaya,
   u.nom_latin as nom,
   u.dateactive as date_activite,
   u.datearret as date_arret,
@@ -116,6 +126,8 @@ with all_unites as (
   from {{ source('__raw_', 'cz_unites') }} u
   left join {{ source('__raw_', 'cz_communes') }} c
     on u.commune_id = c."Id"
+  left join {{ source('__raw_', 'cz_wilaya') }} w
+    on u.wilaya_id = w."ID"
   
   union all
   
@@ -130,6 +142,7 @@ with all_unites as (
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
   u.reference,
+  w.code_wilaya,
   u.nom_latin as nom,
   u.dateactive as date_activite,
   u.datearret as date_arret,
@@ -140,6 +153,8 @@ with all_unites as (
   from {{ source('__raw_', 'sahara_unites') }} u
   left join {{ source('__raw_', 'sahara_communes') }} c
     on u.commune_id = c."Id"
+  left join {{ source('__raw_', 'sahara_wilaya') }} w
+    on u.wilaya_id = w."ID"
 ),
 
 -- Step 2: Prepare source data with natural key (src_id) and apply incremental filter
@@ -148,6 +163,7 @@ source_data as (
     src || '_' || usagers_id as src_id,
    usagers_id,
 code_commune,
+code_wilaya,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
@@ -174,6 +190,7 @@ source_data_deduped as (  -- NEW CTE
     src_id,
     usagers_id,
     code_commune,
+    code_wilaya,
     type_usagers_id,
     status_usagers_id,
     etat_usagers_id,
@@ -197,6 +214,7 @@ source_data_deduped as (  -- NEW CTE
     s.src_id,
     s.usagers_id,
 s.code_commune,
+s.code_wilaya,
 s.type_usagers_id,
 s.status_usagers_id,
 s.etat_usagers_id,
@@ -218,6 +236,7 @@ s.adresse,
     -- IS DISTINCT FROM handles NULL comparisons correctly
     (s.etat_usagers_id is distinct from t.etat_usagers_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
     or (s.code_commune is distinct from t.code_commune)
+    or (s.code_wilaya is distinct from t.code_wilaya)
     or (s.status_usagers_id is distinct from t.status_usagers_id)
     or (s.type_activite_id is distinct from t.type_activite_id)
     or (s.reference is distinct from t.reference)
@@ -234,6 +253,7 @@ s.adresse,
     t.src_id,
     t.usagers_id,
 t.code_commune,
+t.code_wilaya,
 t.type_usagers_id,
 t.status_usagers_id,
 t.etat_usagers_id,
@@ -272,6 +292,7 @@ t.adresse,
     t.src_id,
     t.usagers_id,
 t.code_commune,
+t.code_wilaya,
 t.type_usagers_id,
 t.status_usagers_id,
 t.etat_usagers_id,
@@ -305,6 +326,7 @@ t.adresse,
     src_id,
    usagers_id,
 code_commune,
+code_wilaya,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
@@ -327,6 +349,7 @@ adresse,
     src_id,
     usagers_id,
 code_commune,
+code_wilaya,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
@@ -359,6 +382,7 @@ select
   src_id,
   usagers_id,
 code_commune,
+code_wilaya,
 type_usagers_id,
 status_usagers_id,
 etat_usagers_id,
