@@ -105,9 +105,9 @@ source_data as (
   select
     src || '_' || encaissement_id as src_id,
     encaissement_id,
-    exercice_id,
+    src || '_' || exercice_id as src_exercice_id,
     type_paie_id,
-    usager_id,
+    src || '_' || usager_id as src_usager_id,
     date_encaissement,
     montant_total,
     montant_paye,
@@ -129,9 +129,9 @@ source_data_deduped as (  -- NEW CTE
   select
     src_id,
     encaissement_id,
-    exercice_id,
+    src_exercice_id,
     type_paie_id,
-    usager_id,
+    src_usager_id,
     date_encaissement,
     montant_total,
     montant_paye,
@@ -150,9 +150,9 @@ source_data_deduped as (  -- NEW CTE
   select
     s.src_id,
     s.encaissement_id,
-    s.exercice_id,
+    s.src_exercice_id,
     s.type_paie_id,
-    s.usager_id,
+    s.src_usager_id,
     s.date_encaissement,
     s.montant_total,
     s.montant_paye,
@@ -168,9 +168,9 @@ source_data_deduped as (  -- NEW CTE
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.exercice_id is distinct from t.exercice_id)
+    (s.src_exercice_id is distinct from t.src_exercice_id)
     or (s.type_paie_id is distinct from t.type_paie_id)
-    or (s.usager_id is distinct from t.usager_id)
+    or (s.src_usager_id is distinct from t.src_usager_id)
     or (s.date_encaissement is distinct from t.date_encaissement)
     or (s.montant_total is distinct from t.montant_total)    
     or (s.montant_paye is distinct from t.montant_paye)
@@ -184,9 +184,9 @@ source_data_deduped as (  -- NEW CTE
     t.surrogate_key,
     t.src_id,
     t.encaissement_id,
-    t.exercice_id,
+    t.src_exercice_id,
     t.type_paie_id,
-    t.usager_id,
+    t.src_usager_id,
     t.date_encaissement,
     t.montant_total,
     t.montant_paye,
@@ -220,9 +220,9 @@ source_data_deduped as (  -- NEW CTE
     t.surrogate_key,
     t.src_id,
     t.encaissement_id,
-    t.exercice_id,
+    t.src_exercice_id,
     t.type_paie_id,
-    t.usager_id,
+    t.src_usager_id,
     t.date_encaissement,
     t.montant_total,
     t.montant_paye,
@@ -251,9 +251,9 @@ source_data_deduped as (  -- NEW CTE
   select 
     src_id,
     encaissement_id,
-    exercice_id,
+    src_exercice_id,
     type_paie_id,
-    usager_id,
+    src_usager_id,
     date_encaissement,
     montant_total,
     montant_paye,
@@ -271,9 +271,9 @@ source_data_deduped as (  -- NEW CTE
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
     encaissement_id,
-    exercice_id,
+    src_exercice_id,
     type_paie_id,
-    usager_id,
+    src_usager_id,
     date_encaissement,
     montant_total,
     montant_paye,
@@ -301,9 +301,9 @@ select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   encaissement_id,
-  exercice_id,
+  src_exercice_id,
   type_paie_id,
-  usager_id,
+  src_usager_id,
   date_encaissement,
   montant_total,
   montant_paye,
