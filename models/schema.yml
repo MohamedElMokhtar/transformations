@@ -62,6 +62,13 @@ sources:
       - name: cz_recours
       - name: sahara_recours
 
+    # Wilaya
+      - name: ahs_wilaya
+      - name: csm_wilaya
+      - name: occ_wilaya
+      - name: cz_wilaya
+      - name: sahara_wilaya
+
     # Unités
       - name: ahs_unites
       - name: csm_unites
