@@ -23,7 +23,10 @@ with all_unites as (
   select
       u."Id" as usagers_id,
   c.code_com as code_commune,
-  u.type_unite_id as type_usagers_id,
+  case 
+    when u.type_unite_id = 5 then 7
+    else u.type_unite_id
+  end as type_usagers_id,
   u.statut_unite_id as status_usagers_id,
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
@@ -44,7 +47,11 @@ with all_unites as (
   select
       u."Id" as usagers_id,
   c.code_com as code_commune,
-  u.type_unite_id as type_usagers_id,
+  case 
+    when u.type_unite_id = 4 then 10
+    when u.type_unite_id = 5 then 8
+    else u.type_unite_id
+  end as type_usagers_id,
   u.statut_unite_id as status_usagers_id,
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
@@ -65,7 +72,11 @@ with all_unites as (
   select
      u."Id" as usagers_id,
   c.code_com as code_commune,
-  u.type_unite_id as type_usagers_id,
+  case 
+    when u.type_unite_id = 4 then 6
+    when u.type_unite_id = 5 then 12
+    else u.type_unite_id
+  end as type_usagers_id,
   u.statut_unite_id as status_usagers_id,
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
@@ -86,7 +97,11 @@ with all_unites as (
   select
      u."Id" as usagers_id,
   c.code_com as code_commune,
-  u.type_unite_id as type_usagers_id,
+  case 
+    when u.type_unite_id = 4 then 5
+    when u.type_unite_id = 5 then 11
+    else u.type_unite_id
+  end as type_usagers_id,
   u.statut_unite_id as status_usagers_id,
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
@@ -107,7 +122,10 @@ with all_unites as (
   select
      u."Id" as usagers_id,
   c.code_com as code_commune,
-  u.type_unite_id as type_usagers_id,
+  case 
+    when u.type_unite_id = 5 then 9
+    else u.type_unite_id
+  end as type_usagers_id,
   u.statut_unite_id as status_usagers_id,
   u.etat_unite_id as etat_usagers_id,
   u.type_activite_id,
