@@ -97,10 +97,10 @@ source_data as (
   select
     src || '_' || prelevement_id as src_id,
     prelevement_id,
-    p_eau_id,
+    src || '_' || p_eau_id as src_p_eau_id,
     mode_estimation_id,
-    usagers_id,
-    exercice_id,
+    src || '_' || usagers_id as src_usagers_id,
+    src || '_' || exercice_id as src_exercice_id,
     volume_preleve,
     ancien_index,
     nouveau_index,
@@ -120,10 +120,10 @@ source_data_deduped as (  -- NEW CTE
   select
     src_id,
     prelevement_id,
-    p_eau_id,
+    src_p_eau_id,
     mode_estimation_id,
-    usagers_id,
-    exercice_id,
+    src_usagers_id,
+    src_exercice_id,
     volume_preleve,
     ancien_index,
     nouveau_index,
@@ -140,10 +140,10 @@ source_data_deduped as (  -- NEW CTE
   select
     s.src_id,
     s.prelevement_id,
-    s.p_eau_id,
+    s.src_p_eau_id,
     s.mode_estimation_id,
-    s.usagers_id,
-    s.exercice_id,
+    s.src_usagers_id,
+    s.src_exercice_id,
     s.volume_preleve,
     s.ancien_index,
     s.nouveau_index,
@@ -157,10 +157,10 @@ source_data_deduped as (  -- NEW CTE
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.p_eau_id is distinct from t.p_eau_id)
+    (s.src_p_eau_id is distinct from t.src_p_eau_id)
     or (s.mode_estimation_id is distinct from t.mode_estimation_id)
-    or (s.usagers_id is distinct from t.usagers_id)
-    or (s.exercice_id is distinct from t.exercice_id)
+    or (s.src_usagers_id is distinct from t.src_usagers_id)
+    or (s.src_exercice_id is distinct from t.src_exercice_id)
     or (s.volume_preleve is distinct from t.volume_preleve)
     or (s.ancien_index is distinct from t.ancien_index)
     or (s.nouveau_index is distinct from t.nouveau_index)
@@ -172,10 +172,10 @@ source_data_deduped as (  -- NEW CTE
     t.surrogate_key,
     t.src_id,
     t.prelevement_id,
-    t.p_eau_id,
+    t.src_p_eau_id,
     t.mode_estimation_id,
-    t.usagers_id,
-    t.exercice_id,
+    t.src_usagers_id,
+    t.src_exercice_id,
     t.volume_preleve,
     t.ancien_index,
     t.nouveau_index,
@@ -207,10 +207,10 @@ source_data_deduped as (  -- NEW CTE
     t.surrogate_key,
     t.src_id,
     t.prelevement_id,
-    t.p_eau_id,
+    t.src_p_eau_id,
     t.mode_estimation_id,
-    t.usagers_id,
-    t.exercice_id,
+    t.src_usagers_id,
+    t.src_exercice_id,
     t.volume_preleve,
     t.ancien_index,
     t.nouveau_index,
@@ -237,10 +237,10 @@ source_data_deduped as (  -- NEW CTE
   select 
     src_id,
     prelevement_id,
-    p_eau_id,
+    src_p_eau_id,
     mode_estimation_id,
-    usagers_id,
-    exercice_id,
+    src_usagers_id,
+    src_exercice_id,
     volume_preleve,
     ancien_index,
     nouveau_index,
@@ -256,10 +256,10 @@ source_data_deduped as (  -- NEW CTE
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
     prelevement_id,
-    p_eau_id,
+    src_p_eau_id,
     mode_estimation_id,
-    usagers_id,
-    exercice_id,
+    src_usagers_id,
+    src_exercice_id,
     volume_preleve,
     ancien_index,
     nouveau_index,
@@ -285,10 +285,10 @@ select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   prelevement_id,
-  p_eau_id,
+  src_p_eau_id,
   mode_estimation_id,
-  usagers_id,
-  exercice_id,
+  src_usagers_id,
+  src_exercice_id,
   volume_preleve,
   ancien_index,
   nouveau_index,
