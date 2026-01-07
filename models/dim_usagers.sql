@@ -22,7 +22,7 @@
 with all_unites as (
   select
       u."Id" as usagers_id,
-  c.code_com as code_commune,
+  u.commune_id,
   case 
     when u.type_unite_id = 5 then 7
     else u.type_unite_id
@@ -40,8 +40,6 @@ with all_unites as (
     u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('__raw_', 'ahs_unites') }} u
-  left join {{ source('__raw_', 'ahs_communes') }} c
-    on u.commune_id = c."Id"
   left join {{ source('__raw_', 'ahs_wilaya') }} w
     on u.wilaya_id = w."ID"
   
@@ -49,7 +47,7 @@ with all_unites as (
   
   select
       u."Id" as usagers_id,
-  c.code_com as code_commune,
+  u.commune_id,
   case 
     when u.type_unite_id = 4 then 10
     when u.type_unite_id = 5 then 8
@@ -68,8 +66,6 @@ with all_unites as (
     u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('__raw_', 'csm_unites') }} u
-  left join {{ source('__raw_', 'csm_communes') }} c
-    on u.commune_id = c."Id"
   left join {{ source('__raw_', 'csm_wilaya') }} w
     on u.wilaya_id = w."ID"
   
@@ -77,7 +73,7 @@ with all_unites as (
   
   select
      u."Id" as usagers_id,
-  c.code_com as code_commune,
+  u.commune_id,
   case 
     when u.type_unite_id = 4 then 6
     when u.type_unite_id = 5 then 12
@@ -96,8 +92,6 @@ with all_unites as (
     u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('__raw_', 'occ_unites') }} u
-  left join {{ source('__raw_', 'occ_communes') }} c
-    on u.commune_id = c."Id"
   left join {{ source('__raw_', 'occ_wilaya') }} w
     on u.wilaya_id = w."ID"
   
@@ -105,7 +99,7 @@ with all_unites as (
   
   select
      u."Id" as usagers_id,
-  c.code_com as code_commune,
+  u.commune_id,
   case 
     when u.type_unite_id = 4 then 5
     when u.type_unite_id = 5 then 11
@@ -124,8 +118,6 @@ with all_unites as (
     u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('__raw_', 'cz_unites') }} u
-  left join {{ source('__raw_', 'cz_communes') }} c
-    on u.commune_id = c."Id"
   left join {{ source('__raw_', 'cz_wilaya') }} w
     on u.wilaya_id = w."ID"
   
@@ -133,7 +125,7 @@ with all_unites as (
   
   select
      u."Id" as usagers_id,
-  c.code_com as code_commune,
+  u.commune_id,
   case 
     when u.type_unite_id = 5 then 9
     else u.type_unite_id
@@ -151,8 +143,6 @@ with all_unites as (
     u._ab_cdc_updated_at::timestamp as _ab_cdc_updated_at,
     u._ab_cdc_deleted_at::timestamp as _ab_cdc_deleted_at
   from {{ source('__raw_', 'sahara_unites') }} u
-  left join {{ source('__raw_', 'sahara_communes') }} c
-    on u.commune_id = c."Id"
   left join {{ source('__raw_', 'sahara_wilaya') }} w
     on u.wilaya_id = w."ID"
 ),
@@ -162,7 +152,7 @@ source_data as (
   select
     src || '_' || usagers_id as src_id,
    usagers_id,
-code_commune,
+src || '_' || commune_id as src_commune_id,
 code_wilaya,
 type_usagers_id,
 status_usagers_id,
@@ -189,7 +179,7 @@ source_data_deduped as (  -- NEW CTE
   select
     src_id,
     usagers_id,
-    code_commune,
+    src_commune_id,
     code_wilaya,
     type_usagers_id,
     status_usagers_id,
@@ -213,7 +203,7 @@ source_data_deduped as (  -- NEW CTE
   select
     s.src_id,
     s.usagers_id,
-s.code_commune,
+s.src_commune_id,
 s.code_wilaya,
 s.type_usagers_id,
 s.status_usagers_id,
@@ -235,7 +225,7 @@ s.adresse,
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
     (s.etat_usagers_id is distinct from t.etat_usagers_id)                              -- ######################## To be changed THIS PART you put only the data (don't put id)
-    or (s.code_commune is distinct from t.code_commune)
+    or (s.src_commune_id is distinct from t.src_commune_id)
     or (s.code_wilaya is distinct from t.code_wilaya)
     or (s.status_usagers_id is distinct from t.status_usagers_id)
     or (s.type_activite_id is distinct from t.type_activite_id)
@@ -252,7 +242,7 @@ s.adresse,
     t.surrogate_key,
     t.src_id,
     t.usagers_id,
-t.code_commune,
+t.src_commune_id,
 t.code_wilaya,
 t.type_usagers_id,
 t.status_usagers_id,
@@ -291,7 +281,7 @@ t.adresse,
     t.surrogate_key,
     t.src_id,
     t.usagers_id,
-t.code_commune,
+t.src_commune_id,
 t.code_wilaya,
 t.type_usagers_id,
 t.status_usagers_id,
@@ -325,7 +315,7 @@ t.adresse,
   select 
     src_id,
    usagers_id,
-code_commune,
+src_commune_id,
 code_wilaya,
 type_usagers_id,
 status_usagers_id,
@@ -348,7 +338,7 @@ adresse,
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
     usagers_id,
-code_commune,
+src_commune_id,
 code_wilaya,
 type_usagers_id,
 status_usagers_id,
@@ -381,7 +371,7 @@ select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   usagers_id,
-code_commune,
+src_commune_id,
 code_wilaya,
 type_usagers_id,
 status_usagers_id,

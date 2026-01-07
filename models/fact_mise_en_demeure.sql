@@ -81,7 +81,7 @@ source_data as (
   select
     src || '_' || mdemeure_id as src_id,
     mdemeure_id,
-    usager_id,
+    src || '_' || usager_id as src_usager_id,
     montant_net,
     penalite,
     src || '_' || facture_id as src_facture_id,
@@ -101,7 +101,7 @@ source_data_deduped as (  -- NEW CTE
   select
     src_id,
     mdemeure_id,
-    usager_id,
+    src_usager_id,
     montant_net,
     penalite,
     src_facture_id,
@@ -118,7 +118,7 @@ source_data_deduped as (  -- NEW CTE
   select
     s.src_id,
     s.mdemeure_id,
-    s.usager_id,
+    s.src_usager_id,
     s.montant_net,
     s.penalite,
     s.src_facture_id,
@@ -132,7 +132,7 @@ source_data_deduped as (  -- NEW CTE
   where
     -- Check if any business attributes have changed
     -- IS DISTINCT FROM handles NULL comparisons correctly
-    (s.usager_id is distinct from t.usager_id)
+    (s.src_usager_id is distinct from t.src_usager_id)
     or (s.montant_net is distinct from t.montant_net)
     or (s.penalite is distinct from t.penalite)
     or (s.src_facture_id is distinct from t.src_facture_id)
@@ -144,7 +144,7 @@ source_data_deduped as (  -- NEW CTE
     t.surrogate_key,
     t.src_id,
     t.mdemeure_id,
-    t.usager_id,
+    t.src_usager_id,
     t.montant_net,
     t.penalite,
     t.src_facture_id,
@@ -176,7 +176,7 @@ source_data_deduped as (  -- NEW CTE
     t.surrogate_key,
     t.src_id,
     t.mdemeure_id,
-    t.usager_id,
+    t.src_usager_id,
     t.montant_net,
     t.penalite,
     t.src_facture_id,
@@ -203,7 +203,7 @@ source_data_deduped as (  -- NEW CTE
   select 
     src_id,
     mdemeure_id,
-    usager_id,
+    src_usager_id,
     montant_net,
     penalite,
     src_facture_id,
@@ -219,7 +219,7 @@ source_data_deduped as (  -- NEW CTE
     {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key, -- Unique version key (generate_surrogate_key in dbt_utils with higher version | surrogate_key for this version0.8..)
     src_id,
     mdemeure_id,
-    usager_id,
+    src_usager_id,
     montant_net,
     penalite,
     src_facture_id,
@@ -245,7 +245,7 @@ select
   {{ dbt_utils.surrogate_key(['src_id', '_ab_cdc_updated_at']) }} as surrogate_key,
   src_id,
   mdemeure_id,
-  usager_id,
+  src_usager_id,
   montant_net,
   penalite,
   src_facture_id,
