@@ -76,6 +76,13 @@ sources:
       - name: cz_unites
       - name: sahara_unites
 
+      # Wilaya
+      - name: ahs_wilaya
+      - name: csm_wilaya
+      - name: occ_wilaya
+      - name: cz_wilaya
+      - name: sahara_wilaya
+
 # Models for dwh tables defined with constraints
 
 models:
@@ -215,6 +222,7 @@ models:
 
     config:
       schema: dwh
+
 
   # MDEMEURE
   - name: fact_mise_en_demeure
